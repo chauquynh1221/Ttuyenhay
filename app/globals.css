@@ -1,0 +1,451 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ====================================================================
+   TRUYENFULL PRO — Design System
+   Light mode only. Clean, professional, readable.
+
+   Bảng màu:
+   - Header:    #1A1A1A (gần đen, authoritative)
+   - Nav:       #2D2D2D (xám than)
+   - Body bg:   #F3F1EE (trắng ngà ấm, paper feel)
+   - Card:      #FFFFFF
+   - Accent:    #C0392B (đỏ thẫm sang trọng)
+   - Text:      #1C1C1C / #444 / #888
+   - Border:    #E5E0D8
+   ==================================================================== */
+
+/* === RESET === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-inter), 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444444;
+  background-color: #F3F1EE;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* === TYPOGRAPHY === */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #1C1C1C;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+a {
+  color: #C0392B;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+a:hover {
+  color: #96281B;
+}
+
+/* === LAYOUT === */
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+    padding: 0 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1040px;
+    padding: 0 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1240px;
+  }
+}
+
+/* === BUTTONS — Hệ thống nút rõ ràng 3 cấp === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+
+/* Cấp 1: Primary — hành động chính */
+.btn-primary {
+  background-color: #C0392B;
+  color: #FFFFFF;
+  border-color: #C0392B;
+}
+
+.btn-primary:hover {
+  background-color: #96281B;
+  border-color: #96281B;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Cấp 2: Secondary — hành động phụ nhưng rõ ràng */
+.btn-secondary {
+  background-color: #1C1C1C;
+  color: #FFFFFF;
+  border-color: #1C1C1C;
+}
+
+.btn-secondary:hover {
+  background-color: #333333;
+  border-color: #333333;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Cấp 3: Default — hành động phụ trợ */
+.btn-default {
+  background-color: #FFFFFF;
+  color: #444444;
+  border-color: #D8D3CB;
+}
+
+.btn-default:hover {
+  background-color: #F8F7F5;
+  border-color: #B8B3AB;
+  color: #1C1C1C;
+  text-decoration: none;
+}
+
+/* === LABELS / BADGES === */
+.label {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.label-hot {
+  background-color: #C0392B;
+  color: #fff;
+}
+
+.label-full {
+  background-color: #27AE60;
+  color: #fff;
+}
+
+.label-new {
+  background-color: #2980B9;
+  color: #fff;
+}
+
+/* === FORM CONTROLS === */
+.form-control {
+  display: block;
+  width: 100%;
+  height: 36px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #1C1C1C;
+  background-color: #fff;
+  border: 1px solid #D8D3CB;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus {
+  border-color: #C0392B;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+
+/* === TITLE-LIST: Section Headers === */
+.title-list {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #1C1C1C;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background-color: #FFFFFF;
+  border-left: 3px solid #C0392B;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 640px) {
+  .title-list {
+    font-size: 15px;
+    padding: 11px 16px;
+  }
+}
+
+/* === BREADCRUMB === */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E0D8;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #888;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.breadcrumb>li {
+  display: inline-block;
+}
+
+.breadcrumb>li+li:before {
+  content: "›";
+  padding: 0 5px;
+  color: #CCC;
+}
+
+/* === PAGINATION === */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 20px 0;
+  padding: 0;
+}
+
+.pagination>li {
+  display: inline-block;
+}
+
+.pagination>li>a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  background-color: #fff;
+  border: 1px solid #D8D3CB;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.pagination>li>a:hover {
+  background-color: #FEF2F2;
+  border-color: #C0392B;
+  color: #C0392B;
+}
+
+.pagination>.active>a {
+  background-color: #C0392B;
+  border-color: #C0392B;
+  color: #fff;
+}
+
+/* === BOOK COVER === */
+.book-cover {
+  position: relative;
+  width: 100%;
+  padding-top: 150%;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: #E8E4DC;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.book-cover:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.book-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.book-cover:hover img {
+  transform: scale(1.04);
+}
+
+/* === CHAPTER CONTENT (Reading page) === */
+.chapter-content {
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  padding: 2rem 2.5rem;
+  color: #292522;
+}
+
+@media (max-width: 640px) {
+  .chapter-content {
+    padding: 1.25rem 1rem;
+  }
+}
+
+/* === LIST (chapters table) === */
+.list {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.list>.row {
+  display: table-row;
+  border-bottom: 1px solid #EEE9E0;
+}
+
+.list>.row>div {
+  display: table-cell;
+  padding: 9px 10px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* === TRUYEN TITLE === */
+.truyen-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1C1C1C;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .truyen-title {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .truyen-title {
+    font-size: 16px;
+  }
+}
+
+/* === RESPONSIVE UTILITIES === */
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .hidden-sm {
+    display: none !important;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .hidden-md {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hidden-lg {
+    display: none !important;
+  }
+}
+
+/* === ELEMENT DEFAULTS === */
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CCC8C0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A8A39A;
+}
+
+/* === TEXT SELECTION === */
+::selection {
+  background-color: rgba(192, 57, 43, 0.12);
+}
+
+/* === CARD BASE === */
+.card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E0D8;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
