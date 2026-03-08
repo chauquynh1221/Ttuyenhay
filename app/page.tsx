@@ -1,6 +1,8 @@
 import TruyenCard from '@/components/TruyenCard'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
+import dbConnect from '@/lib/mongodb'
+import Truyen from '@/models/Truyen'
 
 // Helper function to format time ago
 function formatTimeAgo(date: Date): string {
@@ -15,149 +17,49 @@ function formatTimeAgo(date: Date): string {
   return `${days} ngày trước`
 }
 
-// Fetch data from API
-async function fetchTruyenHot() {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/truyen?isHot=true&limit=8&sort=-views`, {
-      cache: 'no-store'
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.data.map((t: any) => ({
-      id: t._id,
-      title: t.title,
-      slug: t.slug,
-      author: t.author,
-      genres: t.genres,
-      isHot: t.isHot,
-      isFull: t.isFull,
-      isNew: t.isNew,
-      views: t.views,
-      coverImage: t.coverImage,
-      latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
-      updatedAt: formatTimeAgo(t.updatedAt)
-    }))
-  } catch (error) {
-    console.error('Error fetching truyen hot:', error)
-    return []
+function mapTruyenCard(t: any) {
+  return {
+    id: t._id.toString(),
+    title: t.title,
+    slug: t.slug,
+    author: t.author,
+    genres: t.genres,
+    isHot: t.isHot,
+    isFull: t.isFull,
+    isNew: t.isNew,
+    views: t.views,
+    coverImage: t.coverImage,
+    totalChapters: t.totalChapters,
+    latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
+    updatedAt: formatTimeAgo(t.updatedAt),
   }
 }
 
-async function fetchTruyenMoi() {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/truyen?limit=10&sort=-updatedAt`, {
-      cache: 'no-store'
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.data.map((t: any) => ({
-      id: t._id,
-      title: t.title,
-      slug: t.slug,
-      author: t.author,
-      genres: t.genres,
-      isHot: t.isHot,
-      isFull: t.isFull,
-      isNew: t.isNew,
-      coverImage: t.coverImage,
-      totalChapters: t.totalChapters,
-      latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
-      updatedAt: formatTimeAgo(t.updatedAt)
-    }))
-  } catch (error) {
-    console.error('Error fetching truyen moi:', error)
-    return []
-  }
+function mapTop(t: any) {
+  return { id: t._id.toString(), title: t.title, slug: t.slug, views: t.views, rating: t.rating }
 }
 
-async function fetchTruyenFull() {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/truyen?isFull=true&limit=10&sort=-updatedAt`, {
-      cache: 'no-store'
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.data.map((t: any) => ({
-      id: t._id,
-      title: t.title,
-      slug: t.slug,
-      author: t.author,
-      genres: t.genres,
-      isFull: t.isFull,
-      coverImage: t.coverImage,
-      totalChapters: t.totalChapters,
-      latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
-      updatedAt: formatTimeAgo(t.updatedAt)
-    }))
-  } catch (error) {
-    console.error('Error fetching truyen full:', error)
-    return []
-  }
-}
-
-// FIX #3: Fetch 3 bộ data riêng biệt cho từng tab trong Sidebar
-// - Top Ngày: cập nhật trong 24h qua, sort theo views
-// - Top Tháng: cập nhật trong 30 ngày, sort theo views  
-// - Top All Time: sort theo views toàn thời gian
-async function fetchTopDaily() {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    // Lấy truyen được cập nhật trong 7 ngày để có đủ data, sort theo views
-    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const res = await fetch(
-      `${baseUrl}/api/truyen?limit=10&sort=views&order=desc&since=${since}`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.data.map((t: any) => ({
-      id: t._id, title: t.title, slug: t.slug, views: t.views, rating: t.rating
-    }))
-  } catch {
-    return []
-  }
-}
-
-async function fetchTopMonthly() {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    // Lấy truyen được cập nhật trong 30 ngày, sort theo views
-    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    const res = await fetch(
-      `${baseUrl}/api/truyen?limit=10&sort=views&order=desc&since=${since}`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.data.map((t: any) => ({
-      id: t._id, title: t.title, slug: t.slug, views: t.views, rating: t.rating
-    }))
-  } catch {
-    return []
-  }
-}
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const [truyenHot, truyenMoi, truyenFull, topDaily, topMonthly, topAllTime] = await Promise.all([
-    fetchTruyenHot(),
-    fetchTruyenMoi(),
-    fetchTruyenFull(),
-    fetchTopDaily(),
-    fetchTopMonthly(),
-    // Top All Time: gọi thẳng không filter thời gian - sort views toàn thời gian
-    (async () => {
-      try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-        const res = await fetch(`${baseUrl}/api/truyen?limit=10&sort=views&order=desc`, { cache: 'no-store' })
-        if (!res.ok) return []
-        const data = await res.json()
-        return data.data.map((t: any) => ({ id: t._id, title: t.title, slug: t.slug, views: t.views, rating: t.rating }))
-      } catch { return [] }
-    })()
+  await dbConnect()
+
+  const [truyenHotRaw, truyenMoiRaw, truyenFullRaw, topDailyRaw, topMonthlyRaw, topAllTimeRaw] = await Promise.all([
+    Truyen.find({ isHot: true }).sort({ views: -1 }).limit(8).lean(),
+    Truyen.find({}).sort({ updatedAt: -1 }).limit(10).lean(),
+    Truyen.find({ isFull: true }).sort({ updatedAt: -1 }).limit(10).lean(),
+    Truyen.find({ updatedAt: { $gte: new Date(Date.now() - 7 * 86400000) } }).sort({ views: -1 }).limit(10).lean(),
+    Truyen.find({ updatedAt: { $gte: new Date(Date.now() - 30 * 86400000) } }).sort({ views: -1 }).limit(10).lean(),
+    Truyen.find({}).sort({ views: -1 }).limit(10).lean(),
   ])
+
+  const truyenHot = truyenHotRaw.map(mapTruyenCard)
+  const truyenMoi = truyenMoiRaw.map(mapTruyenCard)
+  const truyenFull = truyenFullRaw.map(mapTruyenCard)
+  const topDaily = topDailyRaw.map(mapTop)
+  const topMonthly = topMonthlyRaw.map(mapTop)
+  const topAllTime = topAllTimeRaw.map(mapTop)
+
   return (
     <div className="container mx-auto px-3 sm:px-4 py-5 sm:py-6">
       <div className="flex flex-col lg:flex-row gap-5 lg:gap-6">
