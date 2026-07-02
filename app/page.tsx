@@ -1,135 +1,88 @@
-import TruyenCard from '@/components/TruyenCard'
-import Sidebar from '@/components/Sidebar'
-import Link from 'next/link'
+import HeroCarousel from '@/components/HeroCarousel'
+import GenreRail from '@/components/GenreRail'
+import ContinueReading from '@/components/ContinueReading'
+import BookShelf from '@/components/BookShelf'
+import RankingBand from '@/components/RankingBand'
+import FeaturedBento from '@/components/FeaturedBento'
+import Reveal from '@/components/Reveal'
+import { BookOpen, CheckCircle } from '@/components/icons'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
+import Genre from '@/models/Genre'
 
-// Helper function to format time ago
+export const revalidate = 600
+
 function formatTimeAgo(date: Date): string {
-  const now = new Date()
-  const diff = now.getTime() - new Date(date).getTime()
+  const diff = Date.now() - new Date(date).getTime()
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
-
-  if (minutes < 60) return `${minutes} phút trước`
+  if (minutes < 60) return `${Math.max(1, minutes)} phút trước`
   if (hours < 24) return `${hours} giờ trước`
-  return `${days} ngày trước`
+  if (days < 30) return `${days} ngày trước`
+  return `${Math.floor(days / 30)} tháng trước`
 }
 
-function mapTruyenCard(t: any) {
+function mapCard(t: any) {
   return {
     id: t._id.toString(),
     title: t.title,
     slug: t.slug,
     author: t.author,
-    genres: t.genres,
     isHot: t.isHot,
     isFull: t.isFull,
     isNew: t.isNew,
-    views: t.views,
+    rating: t.rating,
     coverImage: t.coverImage,
-    totalChapters: t.totalChapters,
     latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
     updatedAt: formatTimeAgo(t.updatedAt),
   }
 }
 
-function mapTop(t: any) {
-  return { id: t._id.toString(), title: t.title, slug: t.slug, views: t.views, rating: t.rating }
-}
-
-export const dynamic = 'force-dynamic'
-
 export default async function Home() {
   await dbConnect()
 
-  const [truyenHotRaw, truyenMoiRaw, truyenFullRaw, topDailyRaw, topMonthlyRaw, topAllTimeRaw] = await Promise.all([
-    Truyen.find({ isHot: true }).sort({ views: -1 }).limit(8).lean(),
-    Truyen.find({}).sort({ updatedAt: -1 }).limit(10).lean(),
-    Truyen.find({ isFull: true }).sort({ updatedAt: -1 }).limit(10).lean(),
-    Truyen.find({ updatedAt: { $gte: new Date(Date.now() - 7 * 86400000) } }).sort({ views: -1 }).limit(10).lean(),
-    Truyen.find({ updatedAt: { $gte: new Date(Date.now() - 30 * 86400000) } }).sort({ views: -1 }).limit(10).lean(),
-    Truyen.find({}).sort({ views: -1 }).limit(10).lean(),
+  const weekAgo = new Date(Date.now() - 7 * 86400000)
+
+  const [truyenHotRaw, truyenMoiRaw, truyenFullRaw, topRaw, genresRaw] = await Promise.all([
+    Truyen.find({ isHot: true }).sort({ views: -1 }).limit(14).lean(),
+    Truyen.find({}).sort({ updatedAt: -1 }).limit(14).lean(),
+    Truyen.find({ isFull: true }).sort({ updatedAt: -1 }).limit(14).lean(),
+    Truyen.find({}).sort({ views: -1 }).limit(9).lean(),
+    Genre.find({}).sort({ name: 1 }).select('name slug').limit(16).lean(),
   ])
 
-  const truyenHot = truyenHotRaw.map(mapTruyenCard)
-  const truyenMoi = truyenMoiRaw.map(mapTruyenCard)
-  const truyenFull = truyenFullRaw.map(mapTruyenCard)
-  const topDaily = topDailyRaw.map(mapTop)
-  const topMonthly = topMonthlyRaw.map(mapTop)
-  const topAllTime = topAllTimeRaw.map(mapTop)
+  const heroItems = (truyenHotRaw as any[]).slice(0, 5).map((t) => ({
+    slug: t.slug, title: t.title, author: t.author,
+    description: (t.description || '').slice(0, 180),
+    coverImage: t.coverImage, rating: t.rating, genres: t.genres,
+  }))
+  const genres = (genresRaw as any[]).map((g) => ({ name: g.name, slug: g.slug }))
+  const ranking = (topRaw as any[]).map((t) => ({
+    id: t._id.toString(), title: t.title, slug: t.slug, coverImage: t.coverImage, rating: t.rating, views: t.views,
+  }))
+  const bento = (truyenHotRaw as any[]).slice(0, 5).map((t) => ({
+    id: t._id.toString(), title: t.title, slug: t.slug, author: t.author,
+    coverImage: t.coverImage, rating: t.rating, description: (t.description || '').slice(0, 120),
+  }))
+
+  const truyenMoi = truyenMoiRaw.map(mapCard)
+  const truyenFull = truyenFullRaw.map(mapCard)
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-5 sm:py-6">
-      <div className="flex flex-col lg:flex-row gap-5 lg:gap-6">
-        {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          {/* Truyện Hot Section */}
-          <section className="mb-6 sm:mb-8">
-            <div className="title-list flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <span>🔥</span>
-                <span>TRUYỆN HOT</span>
-              </span>
-              <Link href="/danh-sach/truyen-hot" className="text-xs sm:text-sm font-normal normal-case hover:underline hover:text-primary transition-colors">
-                Xem tất cả →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5 sm:gap-6">
-              {truyenHot.map((truyen) => (
-                <TruyenCard key={truyen.id} {...truyen} />
-              ))}
-            </div>
-          </section>
+    <div className="container py-5 sm:py-7 max-w-[1180px]">
+      <HeroCarousel items={heroItems} />
+      <GenreRail genres={genres} />
 
-          {/* Truyện Mới Cập Nhật Section */}
-          <section className="mb-6 sm:mb-8">
-            <div className="title-list flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <span>📚</span>
-                <span>TRUYỆN MỚI CẬP NHẬT</span>
-              </span>
-              <Link href="/danh-sach/truyen-moi" className="text-xs sm:text-sm font-normal normal-case hover:underline hover:text-primary transition-colors">
-                Xem tất cả →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5 sm:gap-6">
-              {truyenMoi.map((truyen) => (
-                <TruyenCard key={truyen.id} {...truyen} />
-              ))}
-            </div>
-          </section>
+      <ContinueReading />
 
-          {/* Truyện Đã Hoàn Thành Section */}
-          <section className="mb-6 sm:mb-8">
-            <div className="title-list flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <span>✅</span>
-                <span>TRUYỆN ĐÃ HOÀN THÀNH</span>
-              </span>
-              <Link href="/danh-sach/truyen-full" className="text-xs sm:text-sm font-normal normal-case hover:underline hover:text-primary transition-colors">
-                Xem tất cả →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5 sm:gap-6">
-              {truyenFull.map((truyen) => (
-                <TruyenCard key={truyen.id} {...truyen} />
-              ))}
-            </div>
-          </section>
-        </div>
+      <Reveal><FeaturedBento items={bento} /></Reveal>
 
-        {/* Sidebar */}
-        <aside className="w-full lg:w-[320px] xl:w-[350px] flex-shrink-0">
-          {/* FIX #3: Truyền 3 bộ data riêng biệt thay vì cùng 1 data */}
-          <Sidebar
-            topDaily={topDaily}
-            topMonthly={topMonthly}
-            topAllTime={topAllTime}
-          />
-        </aside>
-      </div>
+      <Reveal><BookShelf icon={BookOpen} title="Mới cập nhật" href="/danh-sach/truyen-moi" items={truyenMoi} accent="accent" /></Reveal>
+
+      <Reveal><RankingBand items={ranking} /></Reveal>
+
+      <Reveal><BookShelf icon={CheckCircle} title="Đã hoàn thành" href="/danh-sach/truyen-full" items={truyenFull} /></Reveal>
     </div>
   )
 }

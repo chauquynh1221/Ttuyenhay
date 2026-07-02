@@ -101,9 +101,8 @@ const UserSchema: Schema = new Schema(
   }
 )
 
-// Indexes
-UserSchema.index({ email: 1 })
-UserSchema.index({ role: 1 })
+// Lưu ý: email & role đã có `index: true` trong schema nên KHÔNG khai báo lại ở đây
+// (tránh cảnh báo "Duplicate schema index" của Mongoose).
 
 // Limit reading history to last 100 items
 UserSchema.pre('save', function (next) {

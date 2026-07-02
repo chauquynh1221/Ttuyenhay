@@ -1,33 +1,22 @@
 import Navigation from './Navigation'
+import dbConnect from '@/lib/mongodb'
+import GenreModel from '@/models/Genre'
 
-interface Genre {
-  _id: string
-  name: string
-  slug: string
-}
+interface GenreNav { _id: string; name: string; slug: string }
 
-async function getGenres(): Promise<Genre[]> {
+// Query DB trực tiếp (ổn định hơn fetch self-API khi SSR / trên Vercel).
+async function getGenres(): Promise<GenreNav[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/genres`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
-    })
-
-    if (!res.ok) {
-      console.error('Failed to fetch genres')
-      return []
-    }
-
-    const data = await res.json()
-    return data.success ? data.data : []
-  } catch (error) {
-    console.error('Error fetching genres:', error)
+    await dbConnect()
+    const genres = await GenreModel.find({}).sort({ name: 1 }).select('name slug').lean() as any[]
+    return genres.map((g) => ({ _id: g._id.toString(), name: g.name, slug: g.slug }))
+  } catch (e) {
+    console.error('Error fetching genres:', e)
     return []
   }
 }
 
 export default async function NavigationWrapper() {
   const genres = await getGenres()
-
   return <Navigation genres={genres} />
 }

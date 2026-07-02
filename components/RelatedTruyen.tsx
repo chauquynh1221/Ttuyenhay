@@ -57,13 +57,13 @@ export default async function RelatedTruyen({ currentSlug, genres }: RelatedTruy
     return (
         <section className="mt-6">
             <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-bold text-[#1C1C1C] flex items-center gap-2">
+                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
                     📖 Có thể bạn cũng thích
                 </h2>
                 {genres[0] && (
                     <Link
                         href={`/the-loai/${encodeURIComponent(genres[0])}`}
-                        className="text-xs text-[#C0392B] hover:underline"
+                        className="text-xs text-primary hover:underline"
                     >
                         Xem thêm {genres[0]} →
                     </Link>

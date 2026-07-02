@@ -57,58 +57,58 @@ export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug
         router.push('/admin/truyen')
     }
 
-    if (loading) return <div className="p-8 text-center text-[#AAA]">Đang tải...</div>
+    if (loading) return <div className="p-8 text-center text-muted-2">Đang tải...</div>
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-3xl">
-            <h1 className="text-2xl font-bold text-[#1C1C1C] mb-1">✏️ Sửa truyện</h1>
-            <p className="text-sm text-[#888] mb-6">{form.title}</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">✏️ Sửa truyện</h1>
+            <p className="text-sm text-muted mb-6">{form.title}</p>
 
-            <form onSubmit={handleSubmit} className="bg-white border border-[#E5E0D8] rounded-xl p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="card p-6 space-y-4">
                 {error && <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{error}</div>}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Tên truyện *</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Tên truyện *</label>
                         <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                            className="form-control" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Slug</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Slug</label>
                         <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] font-mono text-xs" />
+                            className="form-control font-mono text-xs" />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Tác giả *</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Tác giả *</label>
                         <input value={form.author} onChange={e => setForm({ ...form, author: e.target.value })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                            className="form-control" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Ảnh bìa (URL)</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Ảnh bìa (URL)</label>
                         <input value={form.coverImage} onChange={e => setForm({ ...form, coverImage: e.target.value })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                            className="form-control" />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#444] mb-1">Mô tả *</label>
+                    <label className="block text-sm font-medium text-foreground/90 mb-1">Mô tả *</label>
                     <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                         rows={4}
-                        className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] resize-none" />
+                        className="form-control h-auto py-2 resize-none" />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#444] mb-2">Thể loại</label>
+                    <label className="block text-sm font-medium text-foreground/90 mb-2">Thể loại</label>
                     <div className="flex flex-wrap gap-2">
                         {genres.map(g => (
                             <button key={g._id} type="button" onClick={() => toggleGenre(g.name)}
                                 className={`px-3 py-1 text-xs rounded-full border transition-colors
                                     ${form.genres.includes(g.name)
-                                        ? 'bg-[#C0392B] text-white border-[#C0392B]'
-                                        : 'bg-white text-[#666] border-[#D8D3CB] hover:border-[#C0392B]'}`}>
+                                        ? 'bg-primary text-primary-fg border-primary'
+                                        : 'bg-surface text-foreground/90 border-border hover:border-primary'}`}>
                                 {g.name}
                             </button>
                         ))}
@@ -117,35 +117,35 @@ export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Trạng thái</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Trạng thái</label>
                         <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]">
+                            className="form-control">
                             <option value="ongoing">Đang ra</option>
                             <option value="completed">Hoàn thành</option>
                             <option value="paused">Tạm dừng</option>
                         </select>
                     </div>
                     <label className="flex items-center gap-2 cursor-pointer mt-6">
-                        <input type="checkbox" checked={form.isHot} onChange={e => setForm({ ...form, isHot: e.target.checked })} className="accent-[#C0392B]" />
+                        <input type="checkbox" checked={form.isHot} onChange={e => setForm({ ...form, isHot: e.target.checked })} className="accent-primary" />
                         <span className="text-sm">🔥 Hot</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer mt-6">
-                        <input type="checkbox" checked={form.isNew} onChange={e => setForm({ ...form, isNew: e.target.checked })} className="accent-[#C0392B]" />
+                        <input type="checkbox" checked={form.isNew} onChange={e => setForm({ ...form, isNew: e.target.checked })} className="accent-primary" />
                         <span className="text-sm">🆕 Mới</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer mt-6">
-                        <input type="checkbox" checked={form.isFull} onChange={e => setForm({ ...form, isFull: e.target.checked })} className="accent-[#C0392B]" />
+                        <input type="checkbox" checked={form.isFull} onChange={e => setForm({ ...form, isFull: e.target.checked })} className="accent-primary" />
                         <span className="text-sm">✅ Full</span>
                     </label>
                 </div>
 
                 <div className="flex gap-3 pt-2">
                     <button type="submit" disabled={saving}
-                        className="px-6 py-2.5 bg-[#C0392B] text-white font-semibold rounded-lg hover:bg-[#96281B] disabled:opacity-50 transition-colors text-sm">
+                        className="btn btn-primary">
                         {saving ? 'Đang lưu...' : '💾 Cập nhật'}
                     </button>
                     <button type="button" onClick={() => router.back()}
-                        className="px-6 py-2.5 text-sm border border-[#D8D3CB] rounded-lg hover:bg-gray-50 transition-colors">
+                        className="btn btn-default">
                         Hủy
                     </button>
                 </div>

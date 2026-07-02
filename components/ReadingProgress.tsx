@@ -24,9 +24,9 @@ export default function ReadingProgress() {
     return (
         <>
             {/* Progress bar — sticky top */}
-            <div className="fixed top-0 left-0 right-0 z-[100] h-1 bg-[#E5E0D8]">
+            <div className="fixed top-0 left-0 right-0 z-[100] h-1 bg-surface-2">
                 <div
-                    className="h-full bg-[#C0392B] transition-all duration-150"
+                    className="h-full bg-primary transition-all duration-150"
                     style={{ width: `${progress}%` }}
                 />
             </div>
@@ -35,7 +35,7 @@ export default function ReadingProgress() {
             {visible && (
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-[#C0392B] text-white rounded-full shadow-lg hover:bg-[#96281B] transition-all flex items-center justify-center"
+                    className="fixed bottom-[5.5rem] right-4 md:bottom-6 md:right-6 z-50 w-11 h-11 bg-primary text-primary-fg rounded-full shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center"
                     title="Lên đầu trang"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@ export default function ReadingProgress() {
 
             {/* Progress % badge */}
             {visible && (
-                <div className="fixed bottom-6 left-6 z-50 bg-black/60 text-white text-xs font-medium px-2.5 py-1.5 rounded-full">
+                <div className="hidden md:block fixed bottom-6 left-6 z-50 bg-black/60 text-white text-xs font-medium px-2.5 py-1.5 rounded-full">
                     {progress}%
                 </div>
             )}

@@ -42,3 +42,6 @@ scripts/set-admin.js
 
 # Windows reserved
 nul
+
+# playwright mcp
+.playwright-mcp/

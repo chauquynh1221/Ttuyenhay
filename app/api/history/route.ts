@@ -12,6 +12,7 @@ export async function GET() {
     await dbConnect()
     const user = await User.findById(currentUser.userId)
         .populate('readingHistory.truyenId', 'title slug coverImage totalChapters')
+        .populate('readingHistory.chapterId', 'chapterNumber')
         .lean()
 
     if (!user) return NextResponse.json({ error: 'Không tìm thấy user' }, { status: 404 })

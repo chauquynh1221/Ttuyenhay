@@ -1,38 +1,59 @@
+'use client'
+
 import Link from 'next/link'
+import CatLogo from './CatLogo'
+import { useState } from 'react'
 import SearchBar from './SearchBar'
 import UserMenu from './UserMenu'
-import DarkModeToggle from './DarkModeToggle'
+import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
+  const [searchOpen, setSearchOpen] = useState(false)
+
   return (
-    <header className="sticky top-0 z-50 bg-[#1A1A1A] shadow-lg">
-      <div className="container mx-auto px-3 sm:px-4">
-        <div className="flex items-center gap-4 h-14 sm:h-16">
+    <header className="site-header sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border">
+      <div className="container">
+        <div className="flex items-center gap-3 h-14">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="Trang chủ">
-            <div className="w-8 h-8 bg-[#C0392B] rounded flex items-center justify-center flex-shrink-0">
-              <svg className="w-4.5 h-4.5 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ width: '18px', height: '18px' }}>
-                <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" />
-              </svg>
-            </div>
-            <span className="text-white font-bold text-lg sm:text-xl tracking-wide font-display leading-none">
-              ĐỌC TRUYỆN
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Bongmeow">
+            <CatLogo className="w-9 h-9 flex-shrink-0" />
+            <span className="font-display font-extrabold text-lg tracking-tight text-header-foreground leading-none whitespace-nowrap">
+              Bong<span className="text-primary">meow</span>
             </span>
           </Link>
 
-          {/* Search — chiếm phần giữa */}
-          <div className="flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
+          {/* Search — desktop inline */}
+          <div className="hidden sm:block flex-1 max-w-lg mx-auto">
             <SearchBar />
           </div>
 
-          {/* Dark mode toggle */}
-          <DarkModeToggle />
+          {/* Spacer mobile */}
+          <div className="flex-1 sm:hidden" />
 
-          {/* User Menu — tự động hiện đúng trạng thái */}
-          <UserMenu />
-
+          {/* Actions */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              className="sm:hidden grid place-items-center w-9 h-9 rounded-full text-muted hover:text-foreground hover:bg-surface-2 transition-colors"
+              aria-label="Tìm kiếm"
+              aria-expanded={searchOpen}
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+            <ThemeToggle />
+            <UserMenu />
+          </div>
         </div>
+
+        {/* Search — mobile expandable */}
+        {searchOpen && (
+          <div className="sm:hidden pb-3 animate-slide-down">
+            <SearchBar autoFocus onSubmitted={() => setSearchOpen(false)} />
+          </div>
+        )}
       </div>
     </header>
   )

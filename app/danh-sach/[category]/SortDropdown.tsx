@@ -26,9 +26,9 @@ export default function SortDropdown({ category, currentSort, currentOrder }: So
 
     return (
         <div className="flex items-center gap-2 text-sm font-normal normal-case">
-            <span className="text-[#888] flex-shrink-0">Sắp xếp:</span>
+            <span className="text-muted flex-shrink-0">Sắp xếp:</span>
             <select
-                className="h-8 px-2 text-[13px] text-[#1C1C1C] bg-white border border-[#D8D3CB] rounded-md focus:outline-none focus:border-[#C0392B] focus:ring-1 focus:ring-[#C0392B] cursor-pointer min-w-[160px]"
+                className="form-control h-8 px-2 text-[13px] cursor-pointer min-w-[160px]"
                 value={currentValue}
                 onChange={handleChange}
             >

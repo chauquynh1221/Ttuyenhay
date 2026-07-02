@@ -77,13 +77,13 @@ export default function AdminCommentsPage() {
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-5xl">
-            <h1 className="text-2xl font-bold text-[#1C1C1C] mb-1">💬 Kiểm duyệt bình luận</h1>
-            <p className="text-sm text-[#888] mb-6">{total} bình luận trong hệ thống</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">💬 Kiểm duyệt bình luận</h1>
+            <p className="text-sm text-muted mb-6">{total} bình luận trong hệ thống</p>
 
             <div className="flex items-center gap-3 mb-4">
                 <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
                     placeholder="Tìm theo nội dung, tên user..."
-                    className="flex-1 max-w-sm px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                    className="form-control flex-1 max-w-sm" />
                 {selected.size > 0 && (
                     <button onClick={handleBulkDelete}
                         className="px-3 py-2 bg-red-500 text-white text-xs font-semibold rounded-lg hover:bg-red-600 transition-colors">
@@ -92,45 +92,45 @@ export default function AdminCommentsPage() {
                 )}
             </div>
 
-            <div className="bg-white border border-[#E5E0D8] rounded-xl overflow-hidden">
+            <div className="card overflow-hidden">
                 {loading ? (
-                    <div className="p-8 text-center text-[#AAA] text-sm">Đang tải...</div>
+                    <div className="p-8 text-center text-muted-2 text-sm">Đang tải...</div>
                 ) : (
                     <>
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-[#E5E0D8] bg-[#F8F7F5]">
+                                <tr className="border-b border-border bg-surface-2">
                                     <th className="px-4 py-3 w-8">
                                         <input type="checkbox" checked={selected.size === comments.length && comments.length > 0}
                                             onChange={toggleAll} className="accent-[#C0392B]" />
                                     </th>
-                                    <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">User</th>
-                                    <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Nội dung</th>
-                                    <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Truyện</th>
-                                    <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Ngày</th>
-                                    <th className="text-right px-4 py-3 text-xs text-[#888] font-semibold uppercase">Xóa</th>
+                                    <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">User</th>
+                                    <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Nội dung</th>
+                                    <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Truyện</th>
+                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Ngày</th>
+                                    <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Xóa</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[#F3F1EE]">
+                            <tbody className="divide-y divide-border">
                                 {comments.map(c => (
-                                    <tr key={c._id} className={`hover:bg-[#F8F7F5] ${selected.has(c._id) ? 'bg-red-50' : ''}`}>
+                                    <tr key={c._id} className={`hover:bg-surface-2 ${selected.has(c._id) ? 'bg-red-50' : ''}`}>
                                         <td className="px-4 py-3">
                                             <input type="checkbox" checked={selected.has(c._id)}
                                                 onChange={() => toggleSelect(c._id)} className="accent-[#C0392B]" />
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className="font-medium text-[#1C1C1C] text-xs">{c.userName}</span>
-                                            {!c.userId && <span className="ml-1 text-[10px] bg-gray-100 text-gray-500 px-1 rounded">Khách</span>}
+                                            <span className="font-medium text-foreground text-xs">{c.userName}</span>
+                                            {!c.userId && <span className="ml-1 text-[10px] bg-surface-3 text-muted px-1 rounded">Khách</span>}
                                         </td>
-                                        <td className="px-4 py-3 text-[#444] text-xs max-w-[300px] truncate">{c.content}</td>
+                                        <td className="px-4 py-3 text-foreground/90 text-xs max-w-[300px] truncate">{c.content}</td>
                                         <td className="px-4 py-3">
                                             {c.truyenSlug ? (
-                                                <Link href={`/truyen/${c.truyenSlug}`} target="_blank" className="text-xs text-[#C0392B] hover:underline">
+                                                <Link href={`/truyen/${c.truyenSlug}`} target="_blank" className="text-xs text-primary hover:underline">
                                                     {c.truyenTitle || c.truyenSlug}
                                                 </Link>
                                             ) : '—'}
                                         </td>
-                                        <td className="px-4 py-3 text-center text-[#888] text-xs">
+                                        <td className="px-4 py-3 text-center text-muted text-xs">
                                             {new Date(c.createdAt).toLocaleDateString('vi-VN')}
                                         </td>
                                         <td className="px-4 py-3 text-right">
@@ -142,19 +142,19 @@ export default function AdminCommentsPage() {
                                     </tr>
                                 ))}
                                 {comments.length === 0 && (
-                                    <tr><td colSpan={6} className="text-center py-8 text-[#AAA]">Không có bình luận nào</td></tr>
+                                    <tr><td colSpan={6} className="text-center py-8 text-muted-2">Không có bình luận nào</td></tr>
                                 )}
                             </tbody>
                         </table>
 
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E0D8] bg-[#F8F7F5]">
-                                <span className="text-xs text-[#888]">Trang {page} / {totalPages}</span>
+                            <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-2">
+                                <span className="text-xs text-muted">Trang {page} / {totalPages}</span>
                                 <div className="flex gap-1">
                                     <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                                        className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">← Trước</button>
+                                        className="btn btn-default btn-sm">← Trước</button>
                                     <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                        className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">Sau →</button>
+                                        className="btn btn-default btn-sm">Sau →</button>
                                 </div>
                             </div>
                         )}
@@ -165,12 +165,12 @@ export default function AdminCommentsPage() {
             {/* Modal xác nhận xóa 1 comment */}
             {deleting && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setDeleting(null)}>
-                    <div className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-base font-bold text-[#1C1C1C] mb-2">🗑 Xóa bình luận?</h3>
-                        <p className="text-sm text-[#666] mb-5">Hành động này không thể hoàn tác.</p>
+                    <div className="bg-surface rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+                        <h3 className="text-base font-bold text-foreground mb-2">🗑 Xóa bình luận?</h3>
+                        <p className="text-sm text-foreground/90 mb-5">Hành động này không thể hoàn tác.</p>
                         <div className="flex gap-2 justify-end">
                             <button onClick={() => setDeleting(null)}
-                                className="px-4 py-2 text-sm border border-[#D8D3CB] rounded-lg hover:bg-gray-50">Hủy</button>
+                                className="btn btn-default btn-sm">Hủy</button>
                             <button onClick={confirmDelete}
                                 className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold">Xóa</button>
                         </div>
@@ -181,12 +181,12 @@ export default function AdminCommentsPage() {
             {/* Modal xác nhận xóa nhiều */}
             {bulkConfirm && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setBulkConfirm(false)}>
-                    <div className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-base font-bold text-[#1C1C1C] mb-2">🗑 Xóa {selected.size} bình luận?</h3>
-                        <p className="text-sm text-[#666] mb-5">Tất cả bình luận đã chọn sẽ bị xóa vĩnh viễn.</p>
+                    <div className="bg-surface rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+                        <h3 className="text-base font-bold text-foreground mb-2">🗑 Xóa {selected.size} bình luận?</h3>
+                        <p className="text-sm text-foreground/90 mb-5">Tất cả bình luận đã chọn sẽ bị xóa vĩnh viễn.</p>
                         <div className="flex gap-2 justify-end">
                             <button onClick={() => setBulkConfirm(false)}
-                                className="px-4 py-2 text-sm border border-[#D8D3CB] rounded-lg hover:bg-gray-50">Hủy</button>
+                                className="btn btn-default btn-sm">Hủy</button>
                             <button onClick={confirmBulkDelete}
                                 className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold">Xóa tất cả</button>
                         </div>

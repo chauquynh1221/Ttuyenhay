@@ -126,7 +126,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </div>
 
           {items.length === 0 ? (
-            <div className="text-center py-12 text-[#888]">
+            <div className="text-center py-12 text-muted">
               <div className="text-4xl mb-3">📚</div>
               <p className="text-sm">Không tìm thấy truyện nào.</p>
             </div>

@@ -54,47 +54,47 @@ export default function AdminUsersPage() {
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-5xl">
-            <h1 className="text-2xl font-bold text-[#1C1C1C] mb-1">👥 Quản lý người dùng</h1>
-            <p className="text-sm text-[#888] mb-6">{total} người dùng</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">👥 Quản lý người dùng</h1>
+            <p className="text-sm text-muted mb-6">{total} người dùng</p>
 
             <div className="mb-4">
                 <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
                     placeholder="Tìm theo tên hoặc email..."
-                    className="w-full max-w-sm px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                    className="form-control w-full max-w-sm" />
             </div>
 
-            <div className="bg-white border border-[#E5E0D8] rounded-xl overflow-hidden">
+            <div className="card overflow-hidden">
                 {loading ? (
-                    <div className="p-8 text-center text-[#AAA] text-sm">Đang tải...</div>
+                    <div className="p-8 text-center text-muted-2 text-sm">Đang tải...</div>
                 ) : (
                     <>
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-[#E5E0D8] bg-[#F8F7F5]">
-                                    <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">User</th>
-                                    <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Email</th>
-                                    <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Login</th>
-                                    <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Role</th>
-                                    <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Ngày ĐK</th>
-                                    <th className="text-right px-4 py-3 text-xs text-[#888] font-semibold uppercase">Đổi role</th>
+                                <tr className="border-b border-border bg-surface-2">
+                                    <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">User</th>
+                                    <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Email</th>
+                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Login</th>
+                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Role</th>
+                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Ngày ĐK</th>
+                                    <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Đổi role</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[#F3F1EE]">
+                            <tbody className="divide-y divide-border">
                                 {users.map(u => (
-                                    <tr key={u._id} className="hover:bg-[#F8F7F5]">
+                                    <tr key={u._id} className="hover:bg-surface-2">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
                                                 {u.avatar ? (
                                                     <img src={u.avatar} alt="" className="w-7 h-7 rounded-full" />
                                                 ) : (
-                                                    <div className="w-7 h-7 rounded-full bg-[#C0392B] flex items-center justify-center text-white text-xs font-bold">
+                                                    <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-fg text-xs font-bold">
                                                         {u.name[0]?.toUpperCase()}
                                                     </div>
                                                 )}
-                                                <span className="font-medium text-[#1C1C1C]">{u.name}</span>
+                                                <span className="font-medium text-foreground">{u.name}</span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-[#888] text-xs">{u.email}</td>
+                                        <td className="px-4 py-3 text-muted text-xs">{u.email}</td>
                                         <td className="px-4 py-3 text-center">
                                             <span className={`text-[10px] px-1.5 py-0.5 rounded ${u.googleId ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500'}`}>
                                                 {u.googleId ? '🔵 Google' : '📧 Email'}
@@ -105,12 +105,12 @@ export default function AdminUsersPage() {
                                                 {u.role}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-center text-[#888] text-xs">
+                                        <td className="px-4 py-3 text-center text-muted text-xs">
                                             {new Date(u.createdAt).toLocaleDateString('vi-VN')}
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <select value={u.role} onChange={e => handleRoleChange(u._id, e.target.value)}
-                                                className="text-xs px-2 py-1 border border-[#D8D3CB] rounded focus:outline-none">
+                                                className="form-control h-auto w-auto py-1 text-xs">
                                                 <option value="user">user</option>
                                                 <option value="vip">vip</option>
                                                 <option value="admin">admin</option>
@@ -122,13 +122,13 @@ export default function AdminUsersPage() {
                         </table>
 
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E0D8] bg-[#F8F7F5]">
-                                <span className="text-xs text-[#888]">Trang {page} / {totalPages}</span>
+                            <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-2">
+                                <span className="text-xs text-muted">Trang {page} / {totalPages}</span>
                                 <div className="flex gap-1">
                                     <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                                        className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">← Trước</button>
+                                        className="btn btn-default btn-sm">← Trước</button>
                                     <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                        className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">Sau →</button>
+                                        className="btn btn-default btn-sm">Sau →</button>
                                 </div>
                             </div>
                         )}

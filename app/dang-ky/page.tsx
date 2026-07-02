@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import GoogleLoginButton from '@/components/GoogleLoginButton'
+import CatLogo from '@/components/CatLogo'
 
 export default function DangKyPage() {
     const router = useRouter()
@@ -45,23 +46,23 @@ export default function DangKyPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F3F1EE] flex items-start justify-center px-4 pt-6 pb-12">
+        <div className="min-h-screen bg-bg flex items-start justify-center px-4 pt-6 pb-12">
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-[#1C1C1C]">
-                        <span className="w-9 h-9 bg-[#C0392B] rounded-lg flex items-center justify-center text-white font-bold text-sm">Đ</span>
-                        ĐỌC TRUYỆN
+                    <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-foreground">
+                        <CatLogo className="w-9 h-9" />
+                        Bongmeow
                     </Link>
-                    <p className="text-[#888] text-sm mt-2">Tạo tài khoản để lưu tủ sách của bạn</p>
+                    <p className="text-muted text-sm mt-2">Tạo tài khoản để lưu tủ sách của bạn</p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-white rounded-xl border border-[#E5E0D8] shadow-sm p-8">
-                    <h1 className="text-xl font-bold text-[#1C1C1C] mb-6">Đăng ký tài khoản</h1>
+                <div className="card rounded-xl shadow-sm p-8">
+                    <h1 className="text-xl font-bold text-foreground mb-6">Đăng ký tài khoản</h1>
 
                     {error && (
-                        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                        <div className="mb-4 px-4 py-3 bg-primary-soft text-primary border border-border rounded-lg text-sm">
                             {error}
                         </div>
                     )}
@@ -73,72 +74,72 @@ export default function DangKyPage() {
 
                     {/* Divider */}
                     <div className="flex items-center gap-3 my-5">
-                        <div className="flex-1 h-px bg-[#E5E0D8]" />
-                        <span className="text-xs text-[#AAA] font-medium">hoặc đăng ký bằng email</span>
-                        <div className="flex-1 h-px bg-[#E5E0D8]" />
+                        <div className="flex-1 h-px bg-border" />
+                        <span className="text-xs text-muted-2 font-medium">hoặc đăng ký bằng email</span>
+                        <div className="flex-1 h-px bg-border" />
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-[#444] mb-1.5">Tên hiển thị</label>
+                            <label className="block text-sm font-medium text-foreground/90 mb-1.5">Tên hiển thị</label>
                             <input
                                 type="text"
                                 value={form.name}
                                 onChange={e => setForm({ ...form, name: e.target.value })}
                                 placeholder="Tên của bạn"
                                 required minLength={2}
-                                className="w-full px-3 py-2.5 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/20 transition-all"
+                                className="form-control"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#444] mb-1.5">Email</label>
+                            <label className="block text-sm font-medium text-foreground/90 mb-1.5">Email</label>
                             <input
                                 type="email"
                                 value={form.email}
                                 onChange={e => setForm({ ...form, email: e.target.value })}
                                 placeholder="your@email.com"
                                 required
-                                className="w-full px-3 py-2.5 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/20 transition-all"
+                                className="form-control"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#444] mb-1.5">Mật khẩu</label>
+                            <label className="block text-sm font-medium text-foreground/90 mb-1.5">Mật khẩu</label>
                             <input
                                 type="password"
                                 value={form.password}
                                 onChange={e => setForm({ ...form, password: e.target.value })}
                                 placeholder="Tối thiểu 6 ký tự"
                                 required minLength={6}
-                                className="w-full px-3 py-2.5 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/20 transition-all"
+                                className="form-control"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#444] mb-1.5">Xác nhận mật khẩu</label>
+                            <label className="block text-sm font-medium text-foreground/90 mb-1.5">Xác nhận mật khẩu</label>
                             <input
                                 type="password"
                                 value={form.confirm}
                                 onChange={e => setForm({ ...form, confirm: e.target.value })}
                                 placeholder="Nhập lại mật khẩu"
                                 required
-                                className="w-full px-3 py-2.5 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/20 transition-all"
+                                className="form-control"
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-2.5 bg-[#C0392B] text-white font-semibold rounded-lg hover:bg-[#96281B] disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-sm mt-2"
+                            className="btn btn-primary w-full mt-2"
                         >
                             {loading ? 'Đang đăng ký...' : 'Tạo tài khoản'}
                         </button>
                     </form>
 
-                    <div className="mt-6 pt-6 border-t border-[#E5E0D8] text-center text-sm text-[#888]">
+                    <div className="mt-6 pt-6 border-t border-border text-center text-sm text-muted">
                         Đã có tài khoản?{' '}
-                        <Link href="/dang-nhap" className="text-[#C0392B] font-semibold hover:underline">
+                        <Link href="/dang-nhap" className="text-primary font-semibold hover:underline">
                             Đăng nhập
                         </Link>
                     </div>

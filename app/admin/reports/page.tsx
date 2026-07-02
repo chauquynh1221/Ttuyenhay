@@ -51,44 +51,44 @@ export default function AdminReportsPage() {
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-5xl">
-            <h1 className="text-2xl font-bold text-[#1C1C1C] mb-1">🚨 Báo lỗi chương</h1>
-            <p className="text-sm text-[#888] mb-6">{total} báo lỗi {statusFilter === 'pending' ? 'chờ xử lý' : ''}</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">🚨 Báo lỗi chương</h1>
+            <p className="text-sm text-muted mb-6">{total} báo lỗi {statusFilter === 'pending' ? 'chờ xử lý' : ''}</p>
 
             <div className="flex gap-2 mb-4">
                 {['pending', 'resolved', ''].map(s => (
                     <button key={s || 'all'} onClick={() => { setStatusFilter(s); setPage(1) }}
                         className={`px-3 py-1.5 text-xs rounded-lg border transition-colors
-                            ${statusFilter === s ? 'bg-[#C0392B] text-white border-[#C0392B]' : 'border-[#D8D3CB] hover:border-[#C0392B]'}`}>
+                            ${statusFilter === s ? 'bg-primary text-primary-fg border-primary' : 'border-border hover:border-primary'}`}>
                         {s === 'pending' ? '⏳ Chờ xử lý' : s === 'resolved' ? '✅ Đã xử lý' : '📋 Tất cả'}
                     </button>
                 ))}
             </div>
 
-            <div className="bg-white border border-[#E5E0D8] rounded-xl overflow-hidden">
+            <div className="card overflow-hidden">
                 {loading ? (
-                    <div className="p-8 text-center text-[#AAA] text-sm">Đang tải...</div>
+                    <div className="p-8 text-center text-muted-2 text-sm">Đang tải...</div>
                 ) : (
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-[#E5E0D8] bg-[#F8F7F5]">
-                                <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Truyện</th>
-                                <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Chương</th>
-                                <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Loại lỗi</th>
-                                <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Chi tiết</th>
-                                <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Ngày</th>
-                                <th className="text-right px-4 py-3 text-xs text-[#888] font-semibold uppercase">Thao tác</th>
+                            <tr className="border-b border-border bg-surface-2">
+                                <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Truyện</th>
+                                <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Chương</th>
+                                <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Loại lỗi</th>
+                                <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Chi tiết</th>
+                                <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Ngày</th>
+                                <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#F3F1EE]">
+                        <tbody className="divide-y divide-border">
                             {reports.map(r => (
-                                <tr key={r._id} className="hover:bg-[#F8F7F5]">
-                                    <td className="px-4 py-3 font-medium text-[#1C1C1C]">{r.truyenId?.title || '—'}</td>
-                                    <td className="px-4 py-3 text-center text-[#888]">{r.chapterNumber || '—'}</td>
+                                <tr key={r._id} className="hover:bg-surface-2">
+                                    <td className="px-4 py-3 font-medium text-foreground">{r.truyenId?.title || '—'}</td>
+                                    <td className="px-4 py-3 text-center text-muted">{r.chapterNumber || '—'}</td>
                                     <td className="px-4 py-3">
                                         <span className="px-2 py-0.5 bg-orange-50 text-orange-700 rounded text-xs">{REPORT_TYPES[r.reportType] || r.reportType}</span>
                                     </td>
-                                    <td className="px-4 py-3 text-[#666] text-xs max-w-[200px] truncate">{r.description || '—'}</td>
-                                    <td className="px-4 py-3 text-center text-[#888] text-xs">{new Date(r.createdAt).toLocaleDateString('vi-VN')}</td>
+                                    <td className="px-4 py-3 text-foreground/90 text-xs max-w-[200px] truncate">{r.description || '—'}</td>
+                                    <td className="px-4 py-3 text-center text-muted text-xs">{new Date(r.createdAt).toLocaleDateString('vi-VN')}</td>
                                     <td className="px-4 py-3 text-right whitespace-nowrap">
                                         {r.status !== 'resolved' && (
                                             <button onClick={() => handleResolve(r._id)} className="text-xs text-green-600 hover:underline mr-2">✅ Xong</button>
@@ -98,7 +98,7 @@ export default function AdminReportsPage() {
                                 </tr>
                             ))}
                             {reports.length === 0 && (
-                                <tr><td colSpan={6} className="text-center py-8 text-[#AAA]">Không có báo lỗi nào</td></tr>
+                                <tr><td colSpan={6} className="text-center py-8 text-muted-2">Không có báo lỗi nào</td></tr>
                             )}
                         </tbody>
                     </table>

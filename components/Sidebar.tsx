@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Fire, TrendingUp, Crown } from './icons'
 
 interface TruyenItem {
   id: string
@@ -14,12 +15,11 @@ interface SidebarProps {
   topAllTime?: TruyenItem[]
 }
 
-// Rank number colors: 1=đỏ, 2=cam, 3=vàng, còn lại = xám
-function RankNumber({ n }: { n: number }) {
-  const colors = ['#C0392B', '#D35400', '#D4AC0D']
-  const color = n <= 3 ? colors[n - 1] : '#AAAAAA'
+function RankBadge({ n }: { n: number }) {
+  const top = n <= 3
+  const bg = ['bg-primary', 'bg-[#D35400]', 'bg-[#C9A227]'][n - 1] || 'bg-surface-3'
   return (
-    <span className="w-6 text-center font-bold text-sm flex-shrink-0" style={{ color }}>
+    <span className={`grid place-items-center w-6 h-6 rounded-md text-[12px] font-bold flex-shrink-0 ${top ? `${bg} text-white` : 'text-muted-2'}`}>
       {n}
     </span>
   )
@@ -27,27 +27,21 @@ function RankNumber({ n }: { n: number }) {
 
 function TopList({ items, showRating }: { items: TruyenItem[]; showRating?: boolean }) {
   if (items.length === 0) {
-    return <div className="px-4 py-5 text-center text-sm text-[#AAA]">Đang cập nhật...</div>
+    return <div className="px-4 py-5 text-center text-sm text-muted-2">Đang cập nhật...</div>
   }
   return (
-    <div>
-      {items.map((truyen, index) => (
-        <div
-          key={truyen.id}
-          className="flex items-start gap-2.5 px-3.5 py-2.5 border-b border-[#EEE9E0] last:border-b-0 hover:bg-[#F8F7F5] transition-colors"
-        >
-          <RankNumber n={index + 1} />
+    <div className="divide-y divide-border">
+      {items.map((t, i) => (
+        <div key={t.id} className="flex items-start gap-2.5 px-3.5 py-2.5 hover:bg-surface-2 transition-colors">
+          <RankBadge n={i + 1} />
           <div className="flex-1 min-w-0">
-            <Link
-              href={`/truyen/${truyen.slug}`}
-              className="block text-[13px] font-medium text-[#1C1C1C] hover:text-[#C0392B] line-clamp-2 leading-snug mb-0.5 transition-colors"
-            >
-              {truyen.title}
+            <Link href={`/truyen/${t.slug}`} className="block text-[13px] font-medium text-foreground hover:text-primary line-clamp-2 leading-snug transition-colors">
+              {t.title}
             </Link>
-            {showRating && truyen.rating ? (
-              <div className="text-[11px] text-[#AAA]">⭐ {truyen.rating.toFixed(1)}/10</div>
-            ) : truyen.views ? (
-              <div className="text-[11px] text-[#AAA]">{truyen.views.toLocaleString()} lượt xem</div>
+            {showRating && t.rating ? (
+              <div className="text-[11px] text-muted-2 mt-0.5">⭐ {t.rating.toFixed(1)}/10</div>
+            ) : t.views ? (
+              <div className="text-[11px] text-muted-2 mt-0.5">{t.views.toLocaleString('vi-VN')} lượt xem</div>
             ) : null}
           </div>
         </div>
@@ -56,13 +50,12 @@ function TopList({ items, showRating }: { items: TruyenItem[]; showRating?: bool
   )
 }
 
-function SidebarBox({ title, children }: { title: string; children: React.ReactNode }) {
+function SidebarBox({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-[#E5E0D8] rounded-lg overflow-hidden shadow-sm">
-      <div className="title-list mx-0 mb-0 rounded-none border-l-0 border-b border-[#E5E0D8]"
-        style={{ borderLeft: '3px solid #C0392B', borderRadius: '0' }}
-      >
-        {title}
+    <div className="card overflow-hidden">
+      <div className="flex items-center gap-2 px-3.5 py-3 border-b border-border bg-surface-2">
+        <Icon className="w-4 h-4 text-primary" />
+        <span className="text-[13px] font-bold uppercase tracking-wide text-foreground">{title}</span>
       </div>
       {children}
     </div>
@@ -71,24 +64,10 @@ function SidebarBox({ title, children }: { title: string; children: React.ReactN
 
 export default function Sidebar({ topDaily = [], topMonthly = [], topAllTime = [] }: SidebarProps) {
   return (
-    <div className="space-y-4">
-      <SidebarBox title="TOP NGÀY">
-        <TopList items={topDaily} />
-      </SidebarBox>
-
-      <SidebarBox title="TOP THÁNG">
-        <TopList items={topMonthly} />
-      </SidebarBox>
-
-      <SidebarBox title="TOP ALL TIME">
-        <TopList items={topAllTime} showRating />
-      </SidebarBox>
-
-      {/* Quảng cáo placeholder */}
-      <div className="bg-[#F8F7F5] border border-[#E5E0D8] rounded-lg p-4 text-center">
-        <div className="text-xs text-[#AAA] uppercase tracking-wider mb-1">Quảng cáo</div>
-        <div className="text-xs text-[#CCC]">Vị trí quảng cáo 300×250</div>
-      </div>
+    <div className="space-y-4 lg:sticky lg:top-32">
+      <SidebarBox title="Top tuần" icon={Fire}><TopList items={topDaily} /></SidebarBox>
+      <SidebarBox title="Top tháng" icon={TrendingUp}><TopList items={topMonthly} /></SidebarBox>
+      <SidebarBox title="Top all-time" icon={Crown}><TopList items={topAllTime} showRating /></SidebarBox>
     </div>
   )
 }

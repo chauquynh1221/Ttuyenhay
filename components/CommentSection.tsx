@@ -42,19 +42,19 @@ function CommentItem({ comment, isReply = false, currentUserId, onLike, onDelete
 
     return (
         <div className={isReply ? 'flex gap-2' : 'flex gap-3 group'}>
-            <div className={`flex-shrink-0 ${isReply ? 'w-7 h-7' : 'w-8 h-8'} bg-[#C0392B] rounded-full flex items-center justify-center text-white text-xs font-bold`}>
+            <div className={`flex-shrink-0 ${isReply ? 'w-7 h-7' : 'w-8 h-8'} bg-primary rounded-full flex items-center justify-center text-primary-fg text-xs font-bold`}>
                 {comment.userName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-sm font-semibold text-[#1C1C1C]">{comment.userName}</span>
-                    {!comment.userId && <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">Khách</span>}
-                    <span className="text-xs text-[#AAA]">{formatTimeAgo(comment.createdAt)}</span>
+                    <span className="text-sm font-semibold text-foreground">{comment.userName}</span>
+                    {!comment.userId && <span className="text-[10px] bg-surface-2 text-muted px-1.5 py-0.5 rounded">Khách</span>}
+                    <span className="text-xs text-muted-2">{formatTimeAgo(comment.createdAt)}</span>
                 </div>
-                <p className="text-sm text-[#444] leading-relaxed whitespace-pre-line break-words">{comment.content}</p>
+                <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line break-words">{comment.content}</p>
                 <div className="flex items-center gap-3 mt-1.5">
                     <button onClick={() => onLike(comment._id)}
-                        className="flex items-center gap-1 text-xs text-[#AAA] hover:text-[#C0392B] transition-colors">
+                        className="flex items-center gap-1 text-xs text-muted-2 hover:text-primary transition-colors">
                         <svg style={{ width: 13, height: 13 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                 d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
@@ -66,11 +66,11 @@ function CommentItem({ comment, isReply = false, currentUserId, onLike, onDelete
                     {!isReply && onReply && (
                         currentUserId ? (
                             <button onClick={() => onReply(isActive ? '' : comment._id, comment.userName)}
-                                className={`text-xs transition-colors ${isActive ? 'text-[#C0392B] font-semibold' : 'text-[#AAA] hover:text-[#C0392B]'}`}>
+                                className={`text-xs transition-colors ${isActive ? 'text-primary font-semibold' : 'text-muted-2 hover:text-primary'}`}>
                                 💬 {isActive ? 'Hủy trả lời' : 'Trả lời'}
                             </button>
                         ) : (
-                            <a href="/dang-nhap" className="text-xs text-[#AAA] hover:text-[#C0392B] transition-colors">
+                            <a href="/dang-nhap" className="text-xs text-muted-2 hover:text-primary transition-colors">
                                 💬 Đăng nhập để trả lời
                             </a>
                         )
@@ -78,7 +78,7 @@ function CommentItem({ comment, isReply = false, currentUserId, onLike, onDelete
 
                     {isOwner && (
                         <button onClick={() => onDelete(comment._id, comment.parentId ?? undefined)}
-                            className="text-xs text-[#AAA] hover:text-red-600 transition-colors"
+                            className="text-xs text-muted-2 hover:text-red-600 transition-colors"
                             title="Xoá bình luận">
                             🗑 Xoá
                         </button>
@@ -87,7 +87,7 @@ function CommentItem({ comment, isReply = false, currentUserId, onLike, onDelete
 
                 {/* Nested replies */}
                 {(comment.replies || []).length > 0 && (
-                    <div className="mt-3 space-y-3 border-l-2 border-[#E5E0D8] pl-3">
+                    <div className="mt-3 space-y-3 border-l-2 border-border pl-3">
                         {comment.replies!.map(reply => (
                             <CommentItem
                                 key={reply._id}
@@ -139,18 +139,18 @@ function ReplyForm({ replyingToName, onSubmit, onCancel }: ReplyFormProps) {
                 placeholder={`Trả lời ${replyingToName}...`}
                 rows={2}
                 autoFocus
-                className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/15 resize-none transition-all"
+                className="form-control text-sm resize-none"
             />
             {error && (
                 <p className="text-xs text-red-500">{error}</p>
             )}
             <div className="flex gap-2">
                 <button onClick={submit} disabled={posting || !text.trim()}
-                    className="px-3 py-1.5 bg-[#C0392B] text-white text-xs font-semibold rounded-lg hover:bg-[#96281B] disabled:opacity-50 transition-colors">
+                    className="btn btn-primary btn-sm disabled:opacity-50">
                     {posting ? 'Đang gửi...' : 'Gửi'}
                 </button>
                 <button onClick={onCancel}
-                    className="px-3 py-1.5 text-xs border border-[#D8D3CB] rounded-lg hover:bg-gray-50 transition-colors">
+                    className="btn btn-default btn-sm">
                     Hủy
                 </button>
             </div>
@@ -299,10 +299,10 @@ export default function CommentSection({ truyenId, chapterId }: CommentSectionPr
     }
 
     return (
-        <div className="bg-white border border-[#E5E0D8] rounded-lg p-5">
-            <h2 className="text-base font-bold text-[#1C1C1C] mb-4 flex items-center gap-2">
+        <div className="card p-5">
+            <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
                 💬 Bình luận
-                <span className="text-sm font-normal text-[#AAA]">({total})</span>
+                <span className="text-sm font-normal text-muted-2">({total})</span>
             </h2>
 
             {/* Form đăng root comment */}
@@ -311,25 +311,25 @@ export default function CommentSection({ truyenId, chapterId }: CommentSectionPr
                     <input type="text" value={guestName} onChange={e => setGuestName(e.target.value)}
                         placeholder="Tên của bạn (không cần đăng nhập)..."
                         maxLength={30}
-                        className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/15 transition-all" />
+                        className="form-control text-sm" />
                 )}
                 {currentUserId && (
-                    <div className="flex items-center gap-2 text-sm text-[#888]">
-                        <div className="w-6 h-6 bg-[#C0392B] rounded-full flex items-center justify-center text-white text-xs font-bold">
+                    <div className="flex items-center gap-2 text-sm text-muted">
+                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-fg text-xs font-bold">
                             {currentUserName?.charAt(0).toUpperCase()}
                         </div>
-                        <span>Bình luận với tư cách <strong className="text-[#1C1C1C]">{currentUserName}</strong></span>
+                        <span>Bình luận với tư cách <strong className="text-foreground">{currentUserName}</strong></span>
                     </div>
                 )}
                 <textarea value={content} onChange={e => setContent(e.target.value)}
                     placeholder="Chia sẻ cảm nhận của bạn về truyện này..."
                     rows={3} maxLength={2000}
-                    className="w-full px-3 py-2.5 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/15 transition-all resize-none" />
+                    className="form-control text-sm resize-none" />
                 {error && <p className="text-red-600 text-xs">{error}</p>}
                 <div className="flex items-center justify-between">
-                    <span className="text-xs text-[#AAA]">{content.length}/2000</span>
+                    <span className="text-xs text-muted-2">{content.length}/2000</span>
                     <button onClick={handlePost} disabled={posting || !content.trim()}
-                        className="px-4 py-2 bg-[#C0392B] text-white text-sm font-semibold rounded-lg hover:bg-[#96281B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                        className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
                         {posting ? 'Đang đăng...' : 'Đăng bình luận'}
                     </button>
                 </div>
@@ -339,17 +339,17 @@ export default function CommentSection({ truyenId, chapterId }: CommentSectionPr
             {loading && comments.length === 0 ? (
                 <div className="space-y-3">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="animate-pulse flex gap-3">
-                            <div className="w-8 h-8 bg-[#E5E0D8] rounded-full flex-shrink-0" />
+                        <div key={i} className="flex gap-3">
+                            <div className="w-8 h-8 skeleton rounded-full flex-shrink-0" />
                             <div className="flex-1 space-y-2">
-                                <div className="h-3 bg-[#E5E0D8] rounded w-1/4" />
-                                <div className="h-3 bg-[#E5E0D8] rounded w-3/4" />
+                                <div className="h-3 skeleton rounded w-1/4" />
+                                <div className="h-3 skeleton rounded w-3/4" />
                             </div>
                         </div>
                     ))}
                 </div>
             ) : comments.length === 0 ? (
-                <div className="text-center py-8 text-[#AAA] text-sm">
+                <div className="text-center py-8 text-muted-2 text-sm">
                     Chưa có bình luận nào. Hãy là người đầu tiên! 🎉
                 </div>
             ) : (
@@ -377,7 +377,7 @@ export default function CommentSection({ truyenId, chapterId }: CommentSectionPr
 
                     {comments.length < total && (
                         <button onClick={loadMore} disabled={loading}
-                            className="w-full py-2.5 text-sm text-[#C0392B] border border-[#E5E0D8] rounded-lg hover:border-[#C0392B] hover:bg-[#FEF2F2] transition-colors disabled:opacity-50">
+                            className="w-full py-2.5 text-sm text-primary border border-border rounded-lg hover:border-primary hover:bg-primary-soft transition-colors disabled:opacity-50">
                             {loading ? 'Đang tải...' : `Xem thêm (${total - comments.length} bình luận)`}
                         </button>
                     )}

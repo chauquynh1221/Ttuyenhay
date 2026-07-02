@@ -1,4 +1,7 @@
-process.env.MONGODB_URI = 'mongodb+srv://chau1282001:chau1282001@cluster0.ypewq.mongodb.net/QCTruyen?retryWrites=true&w=majority'
+import { config } from 'dotenv'
+// Nạp MONGODB_URI từ .env.local / .env (KHÔNG hardcode credentials)
+config({ path: '.env.local' })
+config({ path: '.env' })
 
 import mongoose from 'mongoose'
 import Chapter from '../models/Chapter'

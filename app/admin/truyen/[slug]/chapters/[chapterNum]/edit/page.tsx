@@ -42,42 +42,42 @@ export default function AdminEditChapterPage({ params }: { params: Promise<{ slu
         router.push(`/admin/truyen/${slug}/chapters`)
     }
 
-    if (loading) return <div className="p-8 text-center text-[#AAA]">Đang tải...</div>
+    if (loading) return <div className="p-8 text-center text-muted-2">Đang tải...</div>
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-4xl">
-            <h1 className="text-2xl font-bold text-[#1C1C1C] mb-1">✏️ Sửa chương {form.chapterNumber}</h1>
-            <p className="text-sm text-[#888] mb-6">{slug}</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">✏️ Sửa chương {form.chapterNumber}</h1>
+            <p className="text-sm text-muted mb-6">{slug}</p>
 
-            <form onSubmit={handleSubmit} className="bg-white border border-[#E5E0D8] rounded-xl p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="card p-6 space-y-4">
                 {error && <div className="px-4 py-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Số chương</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Số chương</label>
                         <input type="number" value={form.chapterNumber}
                             onChange={e => setForm({ ...form, chapterNumber: Number(e.target.value) })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                            className="form-control" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[#444] mb-1">Tiêu đề</label>
+                        <label className="block text-sm font-medium text-foreground/90 mb-1">Tiêu đề</label>
                         <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                            className="form-control" />
                     </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-[#444] mb-1">Nội dung</label>
+                    <label className="block text-sm font-medium text-foreground/90 mb-1">Nội dung</label>
                     <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })}
                         rows={20}
-                        className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] resize-y font-mono" />
-                    <p className="text-[10px] text-[#AAA] mt-1">{form.content.length.toLocaleString()} ký tự</p>
+                        className="form-control h-auto py-2 resize-y font-mono" />
+                    <p className="text-[10px] text-muted-2 mt-1">{form.content.length.toLocaleString()} ký tự</p>
                 </div>
                 <div className="flex gap-3">
                     <button type="submit" disabled={saving}
-                        className="px-6 py-2.5 bg-[#C0392B] text-white font-semibold rounded-lg hover:bg-[#96281B] disabled:opacity-50 text-sm">
+                        className="btn btn-primary">
                         {saving ? 'Đang lưu...' : '💾 Cập nhật'}
                     </button>
                     <button type="button" onClick={() => router.back()}
-                        className="px-6 py-2.5 text-sm border border-[#D8D3CB] rounded-lg hover:bg-gray-50">Hủy</button>
+                        className="btn btn-default">Hủy</button>
                 </div>
             </form>
         </div>

@@ -4,6 +4,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Pagination from '@/components/Pagination'
 import Sidebar from '@/components/Sidebar'
 import ViewToggle from './ViewToggle'
+import EmptyState from '@/components/EmptyState'
 
 const GENRES = [
   'Tiên Hiệp', 'Kiếm Hiệp', 'Ngôn Tình', 'Đô Thị', 'Huyền Huyễn',
@@ -94,8 +95,8 @@ export default async function SearchPage({ searchParams }: PageProps) {
         {/* Main Content */}
         <div className="flex-1">
           {/* Search Box */}
-          <div className="bg-white border border-[#E5E0D8] rounded-lg shadow-sm p-5 mb-5">
-            <h2 className="text-base font-bold text-[#1C1C1C] mb-3">🔍 Tìm kiếm truyện</h2>
+          <div className="card p-5 mb-5">
+            <h2 className="text-base font-bold text-foreground mb-3">🔍 Tìm kiếm truyện</h2>
             <form action="/tim-kiem" method="GET" className="flex gap-2">
               <input type="hidden" name="genre" value={genre} />
               <input type="hidden" name="status" value={status} />
@@ -105,9 +106,9 @@ export default async function SearchPage({ searchParams }: PageProps) {
                 name="q"
                 defaultValue={q}
                 placeholder="Nhập tên truyện, tác giả..."
-                className="flex-1 px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/15 transition-all"
+                className="form-control flex-1"
               />
-              <button type="submit" className="px-4 py-2 bg-[#C0392B] text-white rounded-lg hover:bg-[#96281B] transition-colors">
+              <button type="submit" className="btn btn-primary px-4 py-2">
                 <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -118,15 +119,15 @@ export default async function SearchPage({ searchParams }: PageProps) {
             <div className="mt-4 space-y-3">
               {/* Thể loại */}
               <div>
-                <p className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-2">Thể loại</p>
+                <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Thể loại</p>
                 <div className="flex flex-wrap gap-1.5">
                   <a href={buildUrl({ genre: '' })}
-                    className={`px-2.5 py-1 text-xs rounded-full border transition-all ${!genre ? 'bg-[#C0392B] text-white border-[#C0392B]' : 'border-[#D8D3CB] text-[#555] hover:border-[#C0392B] hover:text-[#C0392B]'}`}>
+                    className={`px-2.5 py-1 text-xs rounded-full border transition-all ${!genre ? 'bg-primary text-primary-fg border-primary' : 'border-border text-foreground/90 hover:border-primary hover:text-primary'}`}>
                     Tất cả
                   </a>
                   {GENRES.map(g => (
                     <a key={g} href={buildUrl({ genre: g })}
-                      className={`px-2.5 py-1 text-xs rounded-full border transition-all ${genre === g ? 'bg-[#C0392B] text-white border-[#C0392B]' : 'border-[#D8D3CB] text-[#555] hover:border-[#C0392B] hover:text-[#C0392B]'}`}>
+                      className={`px-2.5 py-1 text-xs rounded-full border transition-all ${genre === g ? 'bg-primary text-primary-fg border-primary' : 'border-border text-foreground/90 hover:border-primary hover:text-primary'}`}>
                       {g}
                     </a>
                   ))}
@@ -136,11 +137,11 @@ export default async function SearchPage({ searchParams }: PageProps) {
               <div className="flex flex-wrap gap-4">
                 {/* Trạng thái */}
                 <div>
-                  <p className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-2">Trạng thái</p>
+                  <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Trạng thái</p>
                   <div className="flex gap-2">
                     {[{ v: '', l: 'Tất cả' }, { v: 'ongoing', l: 'Đang ra' }, { v: 'full', l: 'Hoàn thành' }].map(({ v, l }) => (
                       <a key={v} href={buildUrl({ status: v })}
-                        className={`px-3 py-1 text-xs rounded-lg border transition-all ${status === v ? 'bg-[#C0392B] text-white border-[#C0392B]' : 'border-[#D8D3CB] text-[#555] hover:border-[#C0392B] hover:text-[#C0392B]'}`}>
+                        className={`px-3 py-1 text-xs rounded-lg border transition-all ${status === v ? 'bg-primary text-primary-fg border-primary' : 'border-border text-foreground/90 hover:border-primary hover:text-primary'}`}>
                         {l}
                       </a>
                     ))}
@@ -149,11 +150,11 @@ export default async function SearchPage({ searchParams }: PageProps) {
 
                 {/* Sắp xếp */}
                 <div>
-                  <p className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-2">Sắp xếp</p>
+                  <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Sắp xếp</p>
                   <div className="flex gap-2 flex-wrap">
                     {SORT_OPTIONS.map(({ value, label }) => (
                       <a key={value} href={buildUrl({ sort: value })}
-                        className={`px-3 py-1 text-xs rounded-lg border transition-all ${sort === value ? 'bg-[#C0392B] text-white border-[#C0392B]' : 'border-[#D8D3CB] text-[#555] hover:border-[#C0392B] hover:text-[#C0392B]'}`}>
+                        className={`px-3 py-1 text-xs rounded-lg border transition-all ${sort === value ? 'bg-primary text-primary-fg border-primary' : 'border-border text-foreground/90 hover:border-primary hover:text-primary'}`}>
                         {label}
                       </a>
                     ))}
@@ -167,11 +168,11 @@ export default async function SearchPage({ searchParams }: PageProps) {
           {hasFilters ? (
             <>
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-[#555]">
-                  {q && <span>Từ khoá: <strong className="text-[#1C1C1C]">&quot;{q}&quot;</strong></span>}
-                  {genre && <span className={q ? ' · ' : ''}><strong className="text-[#1C1C1C]">{genre}</strong></span>}
+                <div className="text-sm text-foreground/90">
+                  {q && <span>Từ khoá: <strong className="text-foreground">&quot;{q}&quot;</strong></span>}
+                  {genre && <span className={q ? ' · ' : ''}><strong className="text-foreground">{genre}</strong></span>}
                   {' '}
-                  {results.length > 0 && <span className="text-[#AAA]">({totalResults} kết quả)</span>}
+                  {results.length > 0 && <span className="text-muted-2">({totalResults} kết quả)</span>}
                 </div>
                 <ViewToggle currentView={view} query={q} />
               </div>
@@ -194,18 +195,16 @@ export default async function SearchPage({ searchParams }: PageProps) {
                   />
                 </>
               ) : (
-                <div className="bg-white border border-[#E5E0D8] rounded-lg p-12 text-center">
-                  <div className="text-5xl mb-4">🔍</div>
-                  <h3 className="text-lg font-bold mb-2">Không tìm thấy kết quả</h3>
-                  <p className="text-[#AAA] text-sm">Thử thay đổi từ khoá hoặc bộ lọc</p>
+                <div className="card">
+                  <EmptyState title="Meo~ không tìm thấy truyện nào" hint="Thử đổi từ khoá hoặc bộ lọc khác xem sao nhé!" />
                 </div>
               )}
             </>
           ) : (
-            <div className="bg-white border border-[#E5E0D8] rounded-lg p-12 text-center">
+            <div className="card p-12 text-center">
               <div className="text-5xl mb-4">📚</div>
               <h3 className="text-lg font-bold mb-2">Tìm kiếm truyện</h3>
-              <p className="text-[#AAA] text-sm">Nhập tên truyện, tác giả hoặc chọn thể loại bên trên</p>
+              <p className="text-muted-2 text-sm">Nhập tên truyện, tác giả hoặc chọn thể loại bên trên</p>
             </div>
           )}
         </div>

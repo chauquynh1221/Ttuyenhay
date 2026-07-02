@@ -29,7 +29,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
 
     return (
         <div className="flex items-center gap-2">
-            <span className="text-xs text-[#888] font-medium">Chia sẻ:</span>
+            <span className="text-xs text-muted font-medium">Chia sẻ:</span>
 
             {/* Facebook */}
             <a
@@ -62,7 +62,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
                 onClick={copyLink}
                 title="Sao chép liên kết"
                 className={`w-8 h-8 flex items-center justify-center rounded-full border transition-all
-          ${copied ? 'bg-green-500 text-white border-green-500' : 'bg-white text-[#555] border-[#D8D3CB] hover:border-[#C0392B] hover:text-[#C0392B]'}`}
+          ${copied ? 'bg-green-500 text-white border-green-500' : 'bg-surface text-foreground/90 border-border hover:border-primary hover:text-primary'}`}
             >
                 {copied ? (
                     <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">

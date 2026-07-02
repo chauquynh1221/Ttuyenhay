@@ -1,8 +1,13 @@
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+    // Cảnh báo (không throw để tránh vỡ build); HÃY đặt JWT_SECRET trên Vercel/production.
+    console.warn('[auth] JWT_SECRET chưa được cấu hình — token sẽ dùng secret mặc định KHÔNG an toàn. Hãy đặt biến môi trường JWT_SECRET.')
+}
 const SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || 'truyen-full-super-secret-key-2024-change-in-production'
+    JWT_SECRET || 'dev-only-insecure-secret-do-not-use-in-production'
 )
 
 const COOKIE_NAME = 'tf_token'

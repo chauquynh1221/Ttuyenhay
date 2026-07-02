@@ -18,7 +18,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
 
   // Fetch genre info from database
   await dbConnect()
-  const genreDoc = await Genre.findOne({ slug: genreSlug }).lean()
+  const genreDoc = await Genre.findOne({ slug: genreSlug }).lean() as any
   const genreName = genreDoc?.name || genreSlug
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
@@ -32,7 +32,7 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     { cache: 'no-store' }
   )
 
-  let truyenData = { data: [], pagination: { pages: 1 } }
+  let truyenData: { data: any[]; pagination: { pages: number } } = { data: [], pagination: { pages: 1 } }
   if (res.ok) {
     const json = await res.json()
     if (json.success) {

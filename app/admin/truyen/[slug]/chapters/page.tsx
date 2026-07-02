@@ -68,7 +68,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
         fetchData()
     }
 
-    if (loading) return <div className="p-8 text-center text-[#AAA]">Đang tải...</div>
+    if (loading) return <div className="p-8 text-center text-muted-2">Đang tải...</div>
     if (!truyen) return <div className="p-8 text-center text-red-500">Không tìm thấy truyện</div>
 
     return (
@@ -76,76 +76,76 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <Link href="/admin/truyen" className="text-xs text-[#AAA] hover:text-[#C0392B]">← Danh sách truyện</Link>
+                        <Link href="/admin/truyen" className="text-xs text-muted-2 hover:text-primary">← Danh sách truyện</Link>
                     </div>
-                    <h1 className="text-2xl font-bold text-[#1C1C1C]">📖 {truyen.title}</h1>
-                    <p className="text-sm text-[#888] mt-0.5">{truyen.totalChapters} chương • {truyen.author}</p>
+                    <h1 className="text-2xl font-bold text-foreground">📖 {truyen.title}</h1>
+                    <p className="text-sm text-muted mt-0.5">{truyen.totalChapters} chương • {truyen.author}</p>
                 </div>
                 <button onClick={() => setShowForm(!showForm)}
-                    className="px-4 py-2 bg-[#C0392B] text-white text-sm font-semibold rounded-lg hover:bg-[#96281B] transition-colors">
+                    className="btn btn-primary btn-sm">
                     {showForm ? '✕ Đóng' : '➕ Thêm chương'}
                 </button>
             </div>
 
             {/* Form thêm chương */}
             {showForm && (
-                <form onSubmit={handleAddChapter} className="bg-white border border-[#E5E0D8] rounded-xl p-5 mb-6 space-y-3">
-                    <h2 className="text-sm font-bold text-[#1C1C1C]">➕ Thêm chương mới</h2>
+                <form onSubmit={handleAddChapter} className="card p-5 mb-6 space-y-3">
+                    <h2 className="text-sm font-bold text-foreground">➕ Thêm chương mới</h2>
                     {error && <p className="text-xs text-red-500">{error}</p>}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-medium text-[#666] mb-1">Số chương *</label>
+                            <label className="block text-xs font-medium text-foreground/90 mb-1">Số chương *</label>
                             <input type="number" value={chForm.chapterNumber} onChange={e => setChForm({ ...chForm, chapterNumber: Number(e.target.value) })}
-                                className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                                className="form-control" />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-[#666] mb-1">Tiêu đề chương</label>
+                            <label className="block text-xs font-medium text-foreground/90 mb-1">Tiêu đề chương</label>
                             <input value={chForm.title} onChange={e => setChForm({ ...chForm, title: e.target.value })}
                                 placeholder={`Chương ${chForm.chapterNumber}`}
-                                className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                                className="form-control" />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-[#666] mb-1">Nội dung chương *</label>
+                        <label className="block text-xs font-medium text-foreground/90 mb-1">Nội dung chương *</label>
                         <textarea value={chForm.content} onChange={e => setChForm({ ...chForm, content: e.target.value })}
                             placeholder="Paste nội dung chương vào đây..."
                             rows={12}
-                            className="w-full px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B] resize-y font-mono" />
-                        <p className="text-[10px] text-[#AAA] mt-1">{chForm.content.length.toLocaleString()} ký tự</p>
+                            className="form-control h-auto py-2 resize-y font-mono" />
+                        <p className="text-[10px] text-muted-2 mt-1">{chForm.content.length.toLocaleString()} ký tự</p>
                     </div>
                     <div className="flex gap-2">
                         <button type="submit" disabled={saving}
-                            className="px-4 py-2 bg-[#C0392B] text-white text-sm font-semibold rounded-lg hover:bg-[#96281B] disabled:opacity-50 transition-colors">
+                            className="btn btn-primary btn-sm">
                             {saving ? 'Đang lưu...' : '💾 Lưu chương'}
                         </button>
                         <button type="button" onClick={() => setShowForm(false)}
-                            className="px-4 py-2 text-sm border border-[#D8D3CB] rounded-lg hover:bg-gray-50">Hủy</button>
+                            className="btn btn-default btn-sm">Hủy</button>
                     </div>
                 </form>
             )}
 
             {/* Bảng chương */}
-            <div className="bg-white border border-[#E5E0D8] rounded-xl overflow-hidden">
+            <div className="card overflow-hidden">
                 <table className="w-full text-sm">
                     <thead>
-                        <tr className="border-b border-[#E5E0D8] bg-[#F8F7F5]">
-                            <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase w-20">Chương</th>
-                            <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Tiêu đề</th>
-                            <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Độ dài</th>
-                            <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Ngày tạo</th>
-                            <th className="text-right px-4 py-3 text-xs text-[#888] font-semibold uppercase">Thao tác</th>
+                        <tr className="border-b border-border bg-surface-2">
+                            <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase w-20">Chương</th>
+                            <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Tiêu đề</th>
+                            <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Độ dài</th>
+                            <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Ngày tạo</th>
+                            <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F3F1EE]">
+                    <tbody className="divide-y divide-border">
                         {chapters.map(ch => (
-                            <tr key={ch._id} className="hover:bg-[#F8F7F5] transition-colors">
-                                <td className="px-4 py-3 font-semibold text-[#C0392B]">{ch.chapterNumber}</td>
-                                <td className="px-4 py-3 text-[#444]">{ch.title || `Chương ${ch.chapterNumber}`}</td>
-                                <td className="px-4 py-3 text-center text-[#888] text-xs">{ch.contentLength?.toLocaleString()} ký tự</td>
-                                <td className="px-4 py-3 text-center text-[#888] text-xs">{new Date(ch.createdAt).toLocaleDateString('vi-VN')}</td>
+                            <tr key={ch._id} className="hover:bg-surface-2 transition-colors">
+                                <td className="px-4 py-3 font-semibold text-primary">{ch.chapterNumber}</td>
+                                <td className="px-4 py-3 text-foreground/90">{ch.title || `Chương ${ch.chapterNumber}`}</td>
+                                <td className="px-4 py-3 text-center text-muted text-xs">{ch.contentLength?.toLocaleString()} ký tự</td>
+                                <td className="px-4 py-3 text-center text-muted text-xs">{new Date(ch.createdAt).toLocaleDateString('vi-VN')}</td>
                                 <td className="px-4 py-3 text-right">
                                     <Link href={`/truyen/${slug}/chuong-${ch.chapterNumber}`} target="_blank"
-                                        className="text-xs text-gray-500 hover:underline mr-2">Xem</Link>
+                                        className="text-xs text-muted hover:underline mr-2">Xem</Link>
                                     <Link href={`/admin/truyen/${slug}/chapters/${ch.chapterNumber}/edit?id=${ch._id}`}
                                         className="text-xs text-blue-600 hover:underline mr-2">Sửa</Link>
                                     <button onClick={() => handleDeleteChapter(ch)} className="text-xs text-red-500 hover:underline">Xóa</button>
@@ -153,19 +153,19 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
                             </tr>
                         ))}
                         {chapters.length === 0 && (
-                            <tr><td colSpan={5} className="text-center py-8 text-[#AAA]">Chưa có chương nào</td></tr>
+                            <tr><td colSpan={5} className="text-center py-8 text-muted-2">Chưa có chương nào</td></tr>
                         )}
                     </tbody>
                 </table>
 
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E0D8] bg-[#F8F7F5]">
-                        <span className="text-xs text-[#888]">Trang {page} / {totalPages}</span>
+                    <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-2">
+                        <span className="text-xs text-muted">Trang {page} / {totalPages}</span>
                         <div className="flex gap-1">
                             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                                className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">← Trước</button>
+                                className="btn btn-default btn-sm">← Trước</button>
                             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">Sau →</button>
+                                className="btn btn-default btn-sm">Sau →</button>
                         </div>
                     </div>
                 )}

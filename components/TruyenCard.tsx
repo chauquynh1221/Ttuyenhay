@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import Cover from './Cover'
+import { Star, Play } from './icons'
 
 interface TruyenCardProps {
   id: string
@@ -12,62 +13,67 @@ interface TruyenCardProps {
   isFull?: boolean
   isNew?: boolean
   views?: number
+  rating?: number
+  rank?: number
   latestChapter?: { number: number; title: string }
   updatedAt?: string
 }
 
 export default function TruyenCard({
-  title, slug, coverImage, author, isHot, isFull, isNew, latestChapter, updatedAt
+  title, slug, coverImage, author, isHot, isFull, isNew, rating, rank, latestChapter, updatedAt,
 }: TruyenCardProps) {
   return (
     <Link href={`/truyen/${slug}`} className="group block">
-      <div className="bg-white border border-[#E5E0D8] rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+      <div className="card overflow-hidden h-full transition-all duration-200 hover:shadow-card-hover hover:-translate-y-1">
         {/* Cover */}
-        <div className="book-cover bg-[#E8E4DC] rounded-none" style={{ borderRadius: 0 }}>
-          {coverImage ? (
-            <Image
-              src={coverImage}
-              alt={title}
-              fill
-              className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
-              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
+        <div className="book-cover">
+          <Cover src={coverImage} title={title} />
+
+          {/* Hover overlay: gợi ý Đọc ngay */}
+          <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200 grid place-items-center">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-[#111] text-xs font-bold">
+              <Play className="w-3.5 h-3.5" /> Đọc ngay
+            </span>
+          </div>
+
+          {/* Rank badge */}
+          {rank !== undefined && (
+            <span className={`absolute top-2 left-2 z-10 grid place-items-center w-7 h-7 rounded-full text-xs font-bold text-white shadow
+              ${rank === 1 ? 'bg-primary' : rank === 2 ? 'bg-[#D35400]' : rank === 3 ? 'bg-[#C9A227]' : 'bg-black/60'}`}>
+              {rank}
+            </span>
+          )}
+
+          {/* Badges (khi không có rank) */}
+          {rank === undefined && (
+            <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+              {isHot && <span className="label label-hot shadow-sm">HOT</span>}
+              {isFull && <span className="label label-full shadow-sm">FULL</span>}
+              {isNew && <span className="label label-new shadow-sm">MỚI</span>}
             </div>
           )}
 
-          {/* Overlay gradient từ dưới lên */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          {/* Rating + chapter */}
+          {rating ? (
+            <span className="absolute bottom-2 left-2 z-10 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-black/65 text-white text-[11px] font-semibold backdrop-blur-sm">
+              <Star filled className="w-3 h-3 text-yellow-400" />{rating.toFixed(1)}
+            </span>
+          ) : null}
+          {latestChapter && (
+            <span className="absolute bottom-2 right-2 z-10 px-1.5 py-0.5 rounded bg-black/65 text-white text-[11px] font-semibold backdrop-blur-sm">
+              C.{latestChapter.number}
+            </span>
+          )}
+        </div>
 
-          {/* Badges — góc trên trái */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-            {isHot && <span className="label label-hot">HOT</span>}
-            {isFull && <span className="label label-full">FULL</span>}
-            {isNew && <span className="label label-new">MỚI</span>}
-          </div>
-
-          {/* Info overlay — góc dưới */}
-          <div className="absolute bottom-0 left-0 right-0 p-2.5 z-10">
-            <h3 className="text-white font-semibold text-[13px] leading-tight line-clamp-2 mb-1.5 drop-shadow">
-              {title}
-            </h3>
-            <div className="flex items-center gap-2 text-[11px] text-white/80">
-              {latestChapter && (
-                <span className="bg-black/30 px-1.5 py-0.5 rounded">
-                  C.{latestChapter.number}
-                </span>
-              )}
-              {updatedAt && (
-                <span suppressHydrationWarning>{updatedAt}</span>
-              )}
-            </div>
-            {author && (
-              <div className="text-[11px] text-white/60 mt-0.5 truncate">{author}</div>
-            )}
+        {/* Body */}
+        <div className="p-2.5">
+          <h3 className="text-[13px] sm:text-sm font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5em]">
+            {title}
+          </h3>
+          <div className="mt-1.5 flex items-center justify-between gap-2 text-[11px] text-muted-2">
+            {author ? <span className="truncate">{author}</span> : <span />}
+            {updatedAt && <span className="flex-shrink-0 whitespace-nowrap" suppressHydrationWarning>{updatedAt}</span>}
           </div>
         </div>
       </div>

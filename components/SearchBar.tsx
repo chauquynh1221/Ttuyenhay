@@ -1,50 +1,50 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function SearchBar() {
-  const [searchQuery, setSearchQuery] = useState('')
+interface Props {
+  autoFocus?: boolean
+  onSubmitted?: () => void
+}
+
+export default function SearchBar({ autoFocus, onSubmitted }: Props) {
+  const [q, setQ] = useState('')
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const doSearch = (q: string) => {
-    const query = q.trim()
-    if (query) {
-      router.push(`/tim-kiem?q=${encodeURIComponent(query)}`)
-    }
-  }
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus()
+  }, [autoFocus])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    doSearch(searchQuery)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      doSearch(inputRef.current?.value || searchQuery)
-    }
+    const query = q.trim()
+    if (!query) return
+    router.push(`/tim-kiem?q=${encodeURIComponent(query)}`)
+    onSubmitted?.()
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full">
+    <form onSubmit={submit} className="relative w-full" role="search">
       <input
         ref={inputRef}
         type="search"
-        className="w-full h-9 sm:h-10 px-4 pr-10 text-sm text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C0392B] focus:border-[#C0392B] transition-all placeholder-gray-400"
-        placeholder="Tìm kiếm truyện..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={handleKeyDown}
+        className="w-full h-10 pl-4 pr-11 text-sm rounded-full bg-surface-2 text-foreground border border-border
+                   outline-none transition-colors placeholder:text-muted-2
+                   focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/15"
+        placeholder="Tìm truyện, tác giả..."
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
         autoComplete="off"
+        aria-label="Tìm kiếm truyện"
       />
       <button
         type="submit"
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#C0392B] transition-colors p-1"
         aria-label="Tìm kiếm"
+        className="absolute right-1 top-1/2 -translate-y-1/2 grid place-items-center w-8 h-8 rounded-full text-muted hover:text-primary transition-colors"
       >
-        <svg style={{ width: '18px', height: '18px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </button>

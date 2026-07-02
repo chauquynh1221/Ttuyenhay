@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps) {
     const { author } = await params
     const name = decodeURIComponent(author)
     return {
-        title: `Tác giả ${name} | Đọc Truyện Online`,
+        title: `Tác giả ${name} | Bongmeow`,
         description: `Tất cả tác phẩm của tác giả ${name}`,
     }
 }
@@ -37,28 +37,28 @@ export default async function TacGiaPage({ params }: PageProps) {
     return (
         <div className="container mx-auto px-4 py-6 max-w-5xl">
             {/* Author header */}
-            <div className="bg-white border border-[#E5E0D8] rounded-xl p-6 mb-6 flex gap-5 items-start">
-                <div className="w-16 h-16 bg-[#C0392B] rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+            <div className="card p-6 mb-6 flex gap-5 items-start">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
                     {authorName.charAt(0)}
                 </div>
                 <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-[#1C1C1C] mb-1">{authorName}</h1>
-                    <p className="text-sm text-[#888]">Tác giả</p>
+                    <h1 className="text-2xl font-bold text-foreground mb-1">{authorName}</h1>
+                    <p className="text-sm text-muted">Tác giả</p>
                     <div className="flex flex-wrap gap-4 mt-3 text-sm">
                         <div className="text-center">
-                            <div className="font-bold text-[#1C1C1C]">{truyenList.length}</div>
-                            <div className="text-[#AAA] text-xs">Tác phẩm</div>
+                            <div className="font-bold text-foreground">{truyenList.length}</div>
+                            <div className="text-muted-2 text-xs">Tác phẩm</div>
                         </div>
                         <div className="text-center">
-                            <div className="font-bold text-[#1C1C1C]">
+                            <div className="font-bold text-foreground">
                                 {totalViews >= 1000000 ? `${(totalViews / 1000000).toFixed(1)}M` : totalViews >= 1000 ? `${(totalViews / 1000).toFixed(0)}K` : totalViews}
                             </div>
-                            <div className="text-[#AAA] text-xs">Lượt xem</div>
+                            <div className="text-muted-2 text-xs">Lượt xem</div>
                         </div>
                         {avgRating > 0 && (
                             <div className="text-center">
-                                <div className="font-bold text-[#1C1C1C]">⭐ {avgRating.toFixed(1)}</div>
-                                <div className="text-[#AAA] text-xs">Đánh giá TB</div>
+                                <div className="font-bold text-foreground">⭐ {avgRating.toFixed(1)}</div>
+                                <div className="text-muted-2 text-xs">Đánh giá TB</div>
                             </div>
                         )}
                     </div>
@@ -66,14 +66,14 @@ export default async function TacGiaPage({ params }: PageProps) {
             </div>
 
             {/* Truyen list */}
-            <h2 className="text-base font-bold text-[#1C1C1C] mb-4">Tất cả tác phẩm ({truyenList.length})</h2>
+            <h2 className="text-base font-bold text-foreground mb-4">Tất cả tác phẩm ({truyenList.length})</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {truyenList.map((truyen: any) => {
                     const status = truyen.status === 'completed'
                     return (
                         <Link key={truyen._id?.toString()} href={`/truyen/${truyen.slug}`}
-                            className="bg-white border border-[#E5E0D8] rounded-lg overflow-hidden group hover:shadow-md transition-shadow">
-                            <div className="relative aspect-[2/3] bg-[#F3F1EE]">
+                            className="card overflow-hidden group hover:shadow-md transition-shadow">
+                            <div className="relative aspect-[2/3] bg-surface-2">
                                 {truyen.coverImage && (
                                     <Image src={truyen.coverImage} alt={truyen.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 640px) 50vw, 20vw" />
                                 )}
@@ -82,10 +82,10 @@ export default async function TacGiaPage({ params }: PageProps) {
                                 </div>
                             </div>
                             <div className="p-2">
-                                <p className="text-[13px] font-semibold text-[#1C1C1C] line-clamp-2 leading-snug group-hover:text-[#C0392B] transition-colors">
+                                <p className="text-[13px] font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                                     {truyen.title}
                                 </p>
-                                <p className="text-[11px] text-[#AAA] mt-0.5">{truyen.totalChapters} chương</p>
+                                <p className="text-[11px] text-muted-2 mt-0.5">{truyen.totalChapters} chương</p>
                             </div>
                         </Link>
                     )

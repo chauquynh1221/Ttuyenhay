@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
+    // Bật lại type-check khi build để bắt lỗi thật (trước đây bị tắt)
+    ignoreBuildErrors: false,
   },
   images: {
     remotePatterns: [

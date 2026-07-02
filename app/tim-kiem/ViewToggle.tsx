@@ -12,13 +12,13 @@ export default function ViewToggle({ currentView, query }: ViewToggleProps) {
     <div className="flex items-center gap-2">
       <Link
         href={`/tim-kiem?q=${encodeURIComponent(query)}&view=list`}
-        className={`btn btn-default text-xs px-3 py-1 ${currentView === 'list' ? 'bg-primary text-white' : ''}`}
+        className={`btn btn-default text-xs px-3 py-1 ${currentView === 'list' ? 'bg-primary text-primary-fg' : ''}`}
       >
         📋 Danh sách
       </Link>
       <Link
         href={`/tim-kiem?q=${encodeURIComponent(query)}&view=grid`}
-        className={`btn btn-default text-xs px-3 py-1 ${currentView === 'grid' ? 'bg-primary text-white' : ''}`}
+        className={`btn btn-default text-xs px-3 py-1 ${currentView === 'grid' ? 'bg-primary text-primary-fg' : ''}`}
       >
         🔲 Lưới
       </Link>

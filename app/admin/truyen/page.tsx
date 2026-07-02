@@ -79,11 +79,11 @@ export default function AdminTruyenPage() {
         <div className="container mx-auto px-4 py-6 max-w-6xl">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#1C1C1C]">📚 Quản lý truyện</h1>
-                    <p className="text-sm text-[#888] mt-0.5">{total} truyện trong hệ thống</p>
+                    <h1 className="text-2xl font-bold text-foreground">📚 Quản lý truyện</h1>
+                    <p className="text-sm text-muted mt-0.5">{total} truyện trong hệ thống</p>
                 </div>
                 <Link href="/admin/truyen/new"
-                    className="px-4 py-2 bg-[#C0392B] text-white text-sm font-semibold rounded-lg hover:bg-[#96281B] transition-colors">
+                    className="btn btn-primary btn-sm">
                     ➕ Thêm truyện mới
                 </Link>
             </div>
@@ -92,9 +92,9 @@ export default function AdminTruyenPage() {
             <div className="flex gap-3 mb-4">
                 <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
                     placeholder="Tìm kiếm truyện, tác giả, slug..."
-                    className="flex-1 max-w-sm px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]" />
+                    className="form-control flex-1 max-w-sm" />
                 <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
-                    className="px-3 py-2 text-sm border border-[#D8D3CB] rounded-lg focus:outline-none focus:border-[#C0392B]">
+                    className="form-control w-auto">
                     <option value="">Tất cả trạng thái</option>
                     <option value="ongoing">Đang ra</option>
                     <option value="completed">Hoàn thành</option>
@@ -103,40 +103,40 @@ export default function AdminTruyenPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-white border border-[#E5E0D8] rounded-xl overflow-hidden">
+            <div className="card overflow-hidden">
                 {loading ? (
-                    <div className="p-8 text-center text-[#AAA] text-sm">Đang tải...</div>
+                    <div className="p-8 text-center text-muted-2 text-sm">Đang tải...</div>
                 ) : (
                     <>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-[#E5E0D8] bg-[#F8F7F5]">
-                                        <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Truyện</th>
-                                        <th className="text-left px-4 py-3 text-xs text-[#888] font-semibold uppercase">Tác giả</th>
-                                        <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Trạng thái</th>
-                                        <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Chương</th>
-                                        <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Views</th>
-                                        <th className="text-center px-4 py-3 text-xs text-[#888] font-semibold uppercase">Tags</th>
-                                        <th className="text-right px-4 py-3 text-xs text-[#888] font-semibold uppercase">Thao tác</th>
+                                    <tr className="border-b border-border bg-surface-2">
+                                        <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Truyện</th>
+                                        <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Tác giả</th>
+                                        <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Trạng thái</th>
+                                        <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Chương</th>
+                                        <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Views</th>
+                                        <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Tags</th>
+                                        <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[#F3F1EE]">
+                                <tbody className="divide-y divide-border">
                                     {data.map(t => (
-                                        <tr key={t._id} className="hover:bg-[#F8F7F5] transition-colors">
+                                        <tr key={t._id} className="hover:bg-surface-2 transition-colors">
                                             <td className="px-4 py-3">
                                                 <Link href={`/truyen/${t.slug}`} target="_blank"
-                                                    className="font-medium text-[#1C1C1C] hover:text-[#C0392B] line-clamp-1">{t.title}</Link>
-                                                <p className="text-[10px] text-[#AAA] font-mono mt-0.5">/{t.slug}</p>
+                                                    className="font-medium text-foreground hover:text-primary line-clamp-1">{t.title}</Link>
+                                                <p className="text-[10px] text-muted-2 font-mono mt-0.5">/{t.slug}</p>
                                             </td>
-                                            <td className="px-4 py-3 text-[#666]">{t.author}</td>
+                                            <td className="px-4 py-3 text-foreground/90">{t.author}</td>
                                             <td className="px-4 py-3 text-center">
                                                 <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_MAP[t.status]?.color || 'bg-gray-100 text-gray-600'}`}>
                                                     {STATUS_MAP[t.status]?.label || t.status}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3 text-center text-[#888]">{t.totalChapters}</td>
-                                            <td className="px-4 py-3 text-center text-[#888]">{formatViews(t.views)}</td>
+                                            <td className="px-4 py-3 text-center text-muted">{t.totalChapters}</td>
+                                            <td className="px-4 py-3 text-center text-muted">{formatViews(t.views)}</td>
                                             <td className="px-4 py-3 text-center">
                                                 <div className="flex items-center justify-center gap-1">
                                                     <button onClick={() => handleToggle(t._id, 'isHot', t.isHot)}
@@ -158,7 +158,7 @@ export default function AdminTruyenPage() {
                                         </tr>
                                     ))}
                                     {data.length === 0 && (
-                                        <tr><td colSpan={7} className="text-center py-8 text-[#AAA]">Không tìm thấy truyện nào</td></tr>
+                                        <tr><td colSpan={7} className="text-center py-8 text-muted-2">Không tìm thấy truyện nào</td></tr>
                                     )}
                                 </tbody>
                             </table>
@@ -166,13 +166,13 @@ export default function AdminTruyenPage() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E0D8] bg-[#F8F7F5]">
-                                <span className="text-xs text-[#888]">Trang {page} / {totalPages} ({total} truyện)</span>
+                            <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-2">
+                                <span className="text-xs text-muted">Trang {page} / {totalPages} ({total} truyện)</span>
                                 <div className="flex gap-1">
                                     <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                                        className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">← Trước</button>
+                                        className="btn btn-default btn-sm">← Trước</button>
                                     <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                        className="px-3 py-1 text-xs border rounded hover:bg-white disabled:opacity-50">Sau →</button>
+                                        className="btn btn-default btn-sm">Sau →</button>
                                 </div>
                             </div>
                         )}

@@ -1,13 +1,21 @@
 import type { Config } from 'tailwindcss'
 
+/**
+ * Bongmeow — Design System 2026
+ * Token-based, full dark-mode support via CSS variables (RGB triplets → alpha-aware).
+ * Components dùng class semantic: bg-bg / bg-surface / text-foreground / border-border ...
+ * Đổi theme = đổi biến CSS trong globals.css (:root vs .dark), không cần sửa component.
+ */
+
+const withAlpha = (cssVar: string) => `rgb(var(${cssVar}) / <alpha-value>)`
+
 const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  // KHÔNG dùng dark mode nữa
-  darkMode: 'selector',
+  darkMode: 'class',
   theme: {
     screens: {
       'xs': '475px',
@@ -19,51 +27,45 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // === Design System: TruyenFull Pro ===
-        // Màu chủ đạo: Đỏ thẫm sang trọng (book/reading vibe)
-        primary: '#C0392B',
-        'primary-dark': '#96281B',
-        'primary-light': '#E74C3C',
-        'primary-bg': '#FEF2F2',
+        // === Semantic tokens (đổi theo light/dark) ===
+        bg: withAlpha('--bg'),
+        surface: withAlpha('--surface'),
+        'surface-2': withAlpha('--surface-2'),
+        'surface-3': withAlpha('--surface-3'),
+        foreground: withAlpha('--foreground'),
+        muted: withAlpha('--muted'),
+        'muted-2': withAlpha('--muted-2'),
+        border: withAlpha('--border'),
+        'border-strong': withAlpha('--border-strong'),
+        header: withAlpha('--header'),
+        'header-foreground': withAlpha('--header-foreground'),
+        primary: {
+          DEFAULT: withAlpha('--primary'),
+          fg: withAlpha('--primary-foreground'),
+          soft: withAlpha('--primary-soft'),
+          hover: withAlpha('--primary-hover'),
+        },
+        accent: {
+          DEFAULT: withAlpha('--accent'),
+          soft: withAlpha('--accent-soft'),
+        },
+        success: withAlpha('--success'),
+        info: withAlpha('--info'),
+        warning: withAlpha('--warning'),
 
-        // Màu nền
-        'bg-page': '#F3F1EE',  // Nền tổng: trắng ngà ấm, như giấy
-        'bg-card': '#FFFFFF',  // Nền card, panel
-        'bg-alt': '#F8F7F5',  // Nền xen kẽ nhẹ
-
-        // Màu header & nav (dark authoritative)
-        'header-bg': '#1A1A1A',  // Gần đen, chuyên nghiệp như báo
-        'nav-bg': '#2D2D2D',  // Xám than cho navigation
-
-        // Màu text
-        'text-main': '#1C1C1C',  // Text chính — deep charcoal
-        'text-body': '#444444',  // Text body
-        'text-muted': '#888888',  // Text phụ, metadata
-        'text-light': '#AAAAAA',  // Text rất mờ
-
-        // Màu viền & divider
-        'border-base': '#E5E0D8',  // Border tổng (warm tone)
-        'border-light': '#EEE9E0',  // Border mờ hơn
-
-        // Badge colors — flat, không gradient
-        'badge-hot': '#C0392B',
-        'badge-full': '#27AE60',
-        'badge-new': '#2980B9',
-
-        // Legacy aliases
-        'bg-light': '#F3F1EE',
-        'bg-gray': '#F8F7F5',
-        'bg-dark': '#1A1A1A',
-        'text-default': '#444444',
-        'link-blue': '#C0392B',
-        'label-full': '#27AE60',
-        'label-hot': '#C0392B',
-        'label-new': '#2980B9',
+        // Legacy aliases (giữ để component cũ chưa refactor không vỡ)
+        'bg-page': withAlpha('--bg'),
+        'bg-card': withAlpha('--surface'),
+        'bg-alt': withAlpha('--surface-2'),
+        'text-main': withAlpha('--foreground'),
+        'text-body': withAlpha('--foreground'),
+        'text-muted': withAlpha('--muted'),
+        'border-base': withAlpha('--border'),
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['var(--font-lexend)', 'var(--font-inter)', 'sans-serif'],
-        roboto: ['"Roboto Condensed"', 'Tahoma', 'sans-serif'],
+        reading: ['var(--reading-font)', 'Georgia', 'serif'],
       },
       fontSize: {
         'xs': ['11px', { lineHeight: '1.5' }],
@@ -73,37 +75,43 @@ const config: Config = {
         'xl': ['19px', { lineHeight: '1.4' }],
         '2xl': ['22px', { lineHeight: '1.3' }],
         '3xl': ['26px', { lineHeight: '1.2' }],
-        '4xl': ['30px', { lineHeight: '1.1' }],
+        '4xl': ['32px', { lineHeight: '1.1' }],
       },
       borderRadius: {
-        'sm': '4px',
-        DEFAULT: '6px',
-        'md': '8px',
-        'lg': '10px',
-        'xl': '12px',
-        '2xl': '16px',
+        'sm': '6px',
+        DEFAULT: '8px',
+        'md': '10px',
+        'lg': '14px',
+        'xl': '18px',
+        '2xl': '22px',
       },
       boxShadow: {
-        'card': '0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
-        'card-hover': '0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)',
-        'sm': '0 1px 3px rgba(0,0,0,0.08)',
-        'md': '0 2px 8px rgba(0,0,0,0.10)',
-        'lg': '0 4px 20px rgba(0,0,0,0.12)',
-        // Keep legacy names for compatibility
-        'soft': '0 1px 4px rgba(0,0,0,0.08)',
-        'soft-lg': '0 4px 16px rgba(0,0,0,0.12)',
-        'glow': 'none',
-        'glow-accent': 'none',
+        // Bóng đổ nhiều lớp (ambient + key light) — tinh tế, có chiều sâu
+        'xs': '0 1px 2px rgb(0 0 0 / 0.05)',
+        'card': '0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.05)',
+        'card-hover': '0 2px 4px rgb(0 0 0 / 0.06), 0 12px 28px rgb(0 0 0 / 0.13)',
+        'pop': '0 4px 10px rgb(0 0 0 / 0.10), 0 18px 46px rgb(0 0 0 / 0.20)',
+        // legacy
+        'soft': '0 1px 3px rgb(0 0 0 / 0.08)',
+        'soft-lg': '0 8px 24px rgb(0 0 0 / 0.12)',
+      },
+      maxWidth: {
+        'container': '1240px',
+        'reading': '720px',
       },
       animation: {
         'fade-in': 'fadeIn 0.25s ease-out',
-        'slide-up': 'slideUp 0.2s ease-out',
-        'scale-in': 'scaleIn 0.15s ease-out',
+        'slide-up': 'slideUp 0.22s cubic-bezier(0.16,1,0.3,1)',
+        'slide-down': 'slideDown 0.22s cubic-bezier(0.16,1,0.3,1)',
+        'scale-in': 'scaleIn 0.16s cubic-bezier(0.16,1,0.3,1)',
+        'shimmer': 'shimmer 1.4s linear infinite',
       },
       keyframes: {
         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-        slideUp: { '0%': { transform: 'translateY(6px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
-        scaleIn: { '0%': { transform: 'scale(0.97)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+        slideUp: { '0%': { transform: 'translateY(8px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+        slideDown: { '0%': { transform: 'translateY(-8px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+        scaleIn: { '0%': { transform: 'scale(0.96)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
       },
     },
   },

@@ -6,6 +6,8 @@ import Truyen from '@/models/Truyen'
 import Chapter from '@/models/Chapter'
 import ChapterContent from './ChapterContent'
 
+export const revalidate = 3600
+
 interface ChapterData {
   id: string
   truyenId: string
@@ -28,7 +30,7 @@ async function getChapterData(slug: string, chapterNumber: number): Promise<Chap
     await dbConnect()
 
     // Find truyen by slug
-    const truyen = await Truyen.findOne({ slug }).lean()
+    const truyen = await Truyen.findOne({ slug }).lean() as any
     if (!truyen) {
       return null
     }
@@ -37,7 +39,7 @@ async function getChapterData(slug: string, chapterNumber: number): Promise<Chap
     const chapter = await Chapter.findOne({
       truyenId: truyen._id,
       chapterNumber: chapterNumber,
-    }).lean()
+    }).lean() as any
 
     if (!chapter) {
       return null
@@ -50,7 +52,7 @@ async function getChapterData(slug: string, chapterNumber: number): Promise<Chap
     })
       .sort({ chapterNumber: -1 })
       .select('chapterNumber')
-      .lean()
+      .lean() as any
 
     const nextChapter = await Chapter.findOne({
       truyenId: truyen._id,
@@ -58,7 +60,7 @@ async function getChapterData(slug: string, chapterNumber: number): Promise<Chap
     })
       .sort({ chapterNumber: 1 })
       .select('chapterNumber')
-      .lean()
+      .lean() as any
 
     // Get total chapters
     const totalChapters = await Chapter.countDocuments({ truyenId: truyen._id })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useToast } from './Toast'
 
 interface RatingWidgetProps {
     truyenId: string
@@ -19,6 +20,7 @@ export default function RatingWidget({ truyenId }: RatingWidgetProps) {
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [loggedIn, setLoggedIn] = useState(false)
+    const toast = useToast()
 
     useEffect(() => {
         Promise.all([
@@ -50,6 +52,7 @@ export default function RatingWidget({ truyenId }: RatingWidgetProps) {
                 setAvg(data.avg)
                 setCount(data.count)
                 setUserScore(data.userScore)
+                toast(`Đã đánh giá ${score}/10`)
             }
         } catch (error) {
             console.error('Rating error:', error)
@@ -58,17 +61,17 @@ export default function RatingWidget({ truyenId }: RatingWidgetProps) {
         }
     }
 
-    if (loading) return <div className="h-20 bg-[#F8F7F5] rounded-lg animate-pulse" />
+    if (loading) return <div className="h-20 bg-surface-2 rounded-lg animate-pulse" />
 
     const displayScore = hovered ?? userScore
 
     return (
-        <div className="bg-white border border-[#E5E0D8] rounded-lg p-4">
+        <div className="card p-4">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-[#1C1C1C]">⭐ Đánh giá truyện</h3>
+                <h3 className="text-sm font-bold text-foreground">⭐ Đánh giá truyện</h3>
                 <div className="text-right">
-                    <span className="text-xl font-bold text-[#C0392B]">{avg || '—'}</span>
-                    <span className="text-xs text-[#AAA]">/10 ({count.toLocaleString()} đánh giá)</span>
+                    <span className="text-xl font-bold text-primary">{avg || '—'}</span>
+                    <span className="text-xs text-muted-2">/10 ({count.toLocaleString()} đánh giá)</span>
                 </div>
             </div>
 
@@ -89,7 +92,7 @@ export default function RatingWidget({ truyenId }: RatingWidgetProps) {
                                 viewBox="0 0 24 24"
                                 className={`w-full h-5 transition-colors ${filled
                                         ? 'text-yellow-400 fill-yellow-400'
-                                        : 'text-[#E5E0D8] fill-[#E5E0D8]'
+                                        : 'text-border fill-border'
                                     } ${loggedIn ? 'group-hover:text-yellow-300 group-hover:fill-yellow-300' : ''}`}
                             >
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -102,18 +105,18 @@ export default function RatingWidget({ truyenId }: RatingWidgetProps) {
             {/* Label + user state */}
             <div className="text-center text-xs">
                 {!loggedIn && (
-                    <p className="text-[#AAA]">
-                        <a href="/dang-nhap" className="text-[#C0392B] hover:underline">Đăng nhập</a> để đánh giá
+                    <p className="text-muted-2">
+                        <a href="/dang-nhap" className="text-primary hover:underline">Đăng nhập</a> để đánh giá
                     </p>
                 )}
                 {loggedIn && userScore && !hovered && (
-                    <p className="text-[#888]">Bạn đã đánh giá: <span className="font-semibold text-[#C0392B]">{userScore}/10</span> — {LABELS[userScore]}</p>
+                    <p className="text-muted">Bạn đã đánh giá: <span className="font-semibold text-primary">{userScore}/10</span> — {LABELS[userScore]}</p>
                 )}
                 {hovered && (
-                    <p className="text-[#888]">{LABELS[hovered]} — <span className="font-semibold text-[#C0392B]">{hovered}/10</span></p>
+                    <p className="text-muted">{LABELS[hovered]} — <span className="font-semibold text-primary">{hovered}/10</span></p>
                 )}
                 {loggedIn && !userScore && !hovered && (
-                    <p className="text-[#AAA]">Di chuột để chọn điểm</p>
+                    <p className="text-muted-2">Di chuột để chọn điểm</p>
                 )}
             </div>
         </div>

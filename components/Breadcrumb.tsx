@@ -5,32 +5,20 @@ interface BreadcrumbItem {
   href?: string
 }
 
-interface BreadcrumbProps {
-  items: BreadcrumbItem[]
-}
-
-export default function Breadcrumb({ items }: BreadcrumbProps) {
+export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
-    <nav className="breadcrumb">
-      <ul className="flex items-center flex-wrap">
-        <li>
-          <Link href="/" className="text-link-blue hover:underline">
-            Truyện
-          </Link>
-        </li>
-        {items.map((item, index) => (
-          <li key={index} className="flex items-center">
-            <span className="mx-2 text-gray-400">&gt;</span>
-            {item.href ? (
-              <Link href={item.href} className="text-link-blue hover:underline">
-                {item.label}
-              </Link>
-            ) : (
-              <span className="text-gray-600">{item.label}</span>
-            )}
-          </li>
-        ))}
-      </ul>
+    <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1 text-[13px] text-muted mb-4 overflow-x-auto no-scrollbar">
+      <Link href="/" className="hover:text-primary transition-colors whitespace-nowrap">Trang chủ</Link>
+      {items.map((item, i) => (
+        <span key={i} className="flex items-center gap-1 min-w-0">
+          <span className="text-muted-2 px-0.5">›</span>
+          {item.href ? (
+            <Link href={item.href} className="hover:text-primary transition-colors whitespace-nowrap">{item.label}</Link>
+          ) : (
+            <span className="text-foreground font-medium truncate">{item.label}</span>
+          )}
+        </span>
+      ))}
     </nav>
   )
 }

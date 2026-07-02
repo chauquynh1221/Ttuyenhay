@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from './Toast'
 
 interface FavoriteButtonProps {
     truyenId: string
@@ -12,7 +13,18 @@ export default function FavoriteButton({ truyenId, currentChapter = 1 }: Favorit
     const [isFav, setIsFav] = useState(false)
     const [loading, setLoading] = useState(true)
     const [loggedIn, setLoggedIn] = useState(false)
+    const [burst, setBurst] = useState<{ id: number; dx: number; dy: number; e: string }[]>([])
     const router = useRouter()
+    const toast = useToast()
+
+    const fireBurst = () => {
+        const parts = Array.from({ length: 9 }, (_, k) => {
+            const ang = (k / 9) * Math.PI * 2
+            return { id: Date.now() + k, dx: Math.cos(ang) * 42, dy: Math.sin(ang) * 42 - 8, e: k % 2 ? '🐾' : '💗' }
+        })
+        setBurst(parts)
+        setTimeout(() => setBurst([]), 780)
+    }
 
     useEffect(() => {
         // Kiểm tra user đã đăng nhập chưa + đã yêu thích chưa
@@ -47,6 +59,7 @@ export default function FavoriteButton({ truyenId, currentChapter = 1 }: Favorit
             if (isFav) {
                 await fetch(`/api/bookshelf?truyenId=${truyenId}`, { method: 'DELETE' })
                 setIsFav(false)
+                toast('Đã bỏ khỏi yêu thích 🐾')
             } else {
                 await fetch('/api/bookshelf', {
                     method: 'POST',
@@ -54,6 +67,8 @@ export default function FavoriteButton({ truyenId, currentChapter = 1 }: Favorit
                     body: JSON.stringify({ truyenId, currentChapter }),
                 })
                 setIsFav(true)
+                fireBurst()
+                toast('Đã thêm vào yêu thích, meo~ 🐾')
             }
         } catch (error) {
             console.error('Favorite toggle error:', error)
@@ -66,12 +81,15 @@ export default function FavoriteButton({ truyenId, currentChapter = 1 }: Favorit
         <button
             onClick={handleToggle}
             disabled={loading}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border text-sm font-medium transition-all disabled:opacity-50 ${isFav
-                    ? 'bg-[#FEF2F2] border-[#C0392B] text-[#C0392B]'
-                    : 'bg-white border-[#D8D3CB] text-[#444] hover:border-[#C0392B] hover:text-[#C0392B]'
+            className={`btn btn-default w-full gap-2 relative disabled:opacity-50 ${isFav
+                    ? 'bg-primary-soft text-primary border-primary'
+                    : 'hover:text-primary'
                 }`}
             title={isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}
         >
+            {burst.map((p) => (
+                <span key={p.id} className="burst-particle text-sm" style={{ ['--dx' as any]: `${p.dx}px`, ['--dy' as any]: `${p.dy}px` }}>{p.e}</span>
+            ))}
             <svg
                 className="w-4 h-4"
                 fill={isFav ? 'currentColor' : 'none'}

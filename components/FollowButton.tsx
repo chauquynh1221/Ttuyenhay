@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useToast } from './Toast'
 
 interface FollowButtonProps {
     slug: string
@@ -10,6 +11,7 @@ interface FollowButtonProps {
 export default function FollowButton({ slug, title }: FollowButtonProps) {
     const [following, setFollowing] = useState(false)
     const [loading, setLoading] = useState(true)
+    const toast = useToast()
 
     useEffect(() => {
         fetch(`/api/follow/${slug}`)
@@ -25,7 +27,10 @@ export default function FollowButton({ slug, title }: FollowButtonProps) {
             const res = await fetch(`/api/follow/${slug}`, { method: 'POST' })
             if (res.status === 401) { window.location.href = '/dang-nhap'; return }
             const data = await res.json()
-            if (data.following !== undefined) setFollowing(data.following)
+            if (data.following !== undefined) {
+                setFollowing(data.following)
+                toast(data.following ? 'Đã theo dõi, meo~ 🐾' : 'Đã bỏ theo dõi 🐾')
+            }
         } catch { }
         finally { setLoading(false) }
     }
@@ -35,10 +40,10 @@ export default function FollowButton({ slug, title }: FollowButtonProps) {
             onClick={toggle}
             disabled={loading}
             title={following ? `Bỏ theo dõi ${title}` : `Theo dõi ${title}`}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border transition-all
+            className={`btn btn-default w-full gap-1.5
         ${following
-                    ? 'bg-[#C0392B]/10 text-[#C0392B] border-[#C0392B] hover:bg-[#C0392B]/20'
-                    : 'bg-white text-[#555] border-[#D8D3CB] hover:border-[#C0392B] hover:text-[#C0392B]'
+                    ? 'bg-primary-soft text-primary border-primary'
+                    : 'hover:text-primary'
                 } disabled:opacity-50`}
         >
             <svg style={{ width: 16, height: 16 }} fill={following ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">

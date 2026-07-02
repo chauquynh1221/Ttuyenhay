@@ -30,7 +30,7 @@ export default function GenrePageClient({ genre }: GenrePageClientProps) {
 
   return (
     <div className="flex items-center gap-2 text-xs font-normal normal-case w-full sm:w-auto">
-      <span className="text-gray-500 flex-shrink-0">Sắp xếp:</span>
+      <span className="text-muted flex-shrink-0">Sắp xếp:</span>
       <select
         className="form-control h-8 text-xs flex-1 sm:flex-initial min-w-0"
         value={sortBy}
