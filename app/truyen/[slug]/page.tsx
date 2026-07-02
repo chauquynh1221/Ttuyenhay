@@ -9,6 +9,7 @@ import CommentSection from '@/components/CommentSection'
 import RatingWidget from '@/components/RatingWidget'
 import RelatedTruyen from '@/components/RelatedTruyen'
 import { CatEars } from '@/components/icons'
+import MarkChapterSeen from '@/components/MarkChapterSeen'
 import { notFound } from 'next/navigation'
 import { slugify } from '@/lib/slugify'
 import dbConnect from '@/lib/mongodb'
@@ -104,6 +105,8 @@ export default async function TruyenDetailPage({ params, searchParams }: PagePro
 
   return (
     <>
+      <MarkChapterSeen slug={truyen.slug} />
+
       {/* === CINEMATIC HEADER: full-bleed, backdrop từ bìa === */}
       <section className="relative overflow-hidden">
         {truyen.coverImage && (

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import ReadingSettings from '@/components/ReadingSettings'
 import CommentSection from '@/components/CommentSection'
 import ReadingProgress from '@/components/ReadingProgress'
+import ReadingPosition from '@/components/ReadingPosition'
 import ReportButton from '@/components/ReportButton'
 import ImmersiveReading from '@/components/ImmersiveReading'
 import AutoScroll from '@/components/AutoScroll'
@@ -141,6 +142,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterData }) {
   return (
     <div className={`min-h-screen pb-20 md:pb-0 ${isSystem ? 'bg-bg text-foreground' : ''}`} style={rootStyle}>
       <ReadingProgress />
+      <ReadingPosition chapterKey={chapter.id} />
       <ImmersiveReading />
 
       <div className={`mx-auto px-3 sm:px-5 py-4 sm:py-6 ${widthCls}`}>

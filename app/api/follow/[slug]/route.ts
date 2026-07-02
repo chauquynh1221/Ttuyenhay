@@ -41,7 +41,7 @@ export async function POST(
 
         await dbConnect()
         const { slug } = await params
-        const truyen = await Truyen.findOne({ slug }).select('_id title coverImage').lean() as any
+        const truyen = await Truyen.findOne({ slug }).select('_id title coverImage totalChapters').lean() as any
         if (!truyen) return NextResponse.json({ error: 'Không tìm thấy truyện' }, { status: 404 })
 
         const existing = await Follow.findOne({
@@ -60,6 +60,8 @@ export async function POST(
             truyenSlug: slug,
             truyenTitle: truyen.title,
             truyenCover: truyen.coverImage || '',
+            // Mốc chương lúc theo dõi → chỉ báo chương ra SAU khi follow
+            seenChapters: truyen.totalChapters || 0,
         })
 
         return NextResponse.json({ following: true, message: 'Đang theo dõi' })

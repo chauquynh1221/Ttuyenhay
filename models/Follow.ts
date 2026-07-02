@@ -7,6 +7,8 @@ const FollowSchema = new Schema(
         truyenSlug: { type: String, required: true },
         truyenTitle: { type: String, required: true },
         truyenCover: { type: String, default: '' },
+        // Số chương người dùng đã "thấy" — dùng để tính chương mới (undefined = follow cũ, sẽ tự khởi tạo)
+        seenChapters: { type: Number },
     },
     { timestamps: true }
 )
