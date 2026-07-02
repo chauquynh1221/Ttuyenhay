@@ -1,11 +1,11 @@
 import HeroCarousel from '@/components/HeroCarousel'
-import GenreRail from '@/components/GenreRail'
+import GenreMosaic from '@/components/GenreMosaic'
 import ContinueReading from '@/components/ContinueReading'
 import BookShelf from '@/components/BookShelf'
 import RankingBand from '@/components/RankingBand'
 import FeaturedBento from '@/components/FeaturedBento'
+import UpdateList from '@/components/UpdateList'
 import Reveal from '@/components/Reveal'
-import { BookOpen, CheckCircle } from '@/components/icons'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Genre from '@/models/Genre'
@@ -81,11 +81,11 @@ export default async function Home() {
 
         <Reveal><FeaturedBento items={bento} /></Reveal>
 
-        <Reveal><GenreRail genres={genres} /></Reveal>
+        <Reveal><UpdateList items={truyenMoi} /></Reveal>
 
-        <Reveal><BookShelf icon={BookOpen} title="Mới cập nhật" href="/danh-sach/truyen-moi" items={truyenMoi} accent="accent" /></Reveal>
+        <Reveal><GenreMosaic genres={genres} /></Reveal>
 
-        <Reveal><BookShelf icon={CheckCircle} title="Đã hoàn thành" href="/danh-sach/truyen-full" items={truyenFull} /></Reveal>
+        <Reveal><BookShelf overline="Trọn bộ" title="Đã hoàn thành" href="/danh-sach/truyen-full" items={truyenFull} /></Reveal>
       </div>
     </>
   )

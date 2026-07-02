@@ -15,15 +15,15 @@ export interface ReadingSettings {
 export const DEFAULT_READING_SETTINGS: ReadingSettings = {
   fontSize: 19,
   lineHeight: 1.85,
-  fontFamily: 'Palatino Linotype',
+  fontFamily: 'var(--reading-font)',
   theme: 'system',
   wide: false,
 }
 
 export const READING_FONTS = [
+  { value: 'var(--reading-font)', label: 'Literata' },
   { value: 'Palatino Linotype', label: 'Palatino' },
   { value: 'Georgia', label: 'Georgia' },
-  { value: 'Times New Roman', label: 'Times' },
   { value: 'var(--font-inter)', label: 'Sans' },
 ] as const
 

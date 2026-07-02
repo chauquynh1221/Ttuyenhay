@@ -18,9 +18,11 @@ export default function RankingBand({ items }: { items: RItem[] }) {
 
   return (
     <section className="mb-10 sm:mb-12">
-      <div className="flex items-center gap-2.5 mb-5">
-        <Crown className="w-6 h-6 text-primary" />
-        <h2 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">Top truyện được đọc nhiều</h2>
+      <div className="mb-5">
+        <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-1.5">
+          <Crown className="w-4 h-4" /> Bảng xếp hạng
+        </p>
+        <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground">Đọc nhiều nhất</h2>
       </div>
 
       <div className="flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4 sm:-mx-1 sm:px-1 snap-x">

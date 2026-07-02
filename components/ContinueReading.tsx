@@ -28,9 +28,11 @@ export default function ContinueReading() {
 
   return (
     <section className="mb-10 sm:mb-12">
-      <div className="flex items-center gap-2.5 mb-4">
-        <Clock className="w-6 h-6 text-primary" />
-        <h2 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">Đọc tiếp</h2>
+      <div className="mb-4">
+        <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-1.5">
+          <Clock className="w-4 h-4" /> Tiếp tục hành trình
+        </p>
+        <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground">Đọc tiếp</h2>
       </div>
       <div className="flex gap-3.5 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:-mx-1 sm:px-1">
         {valid.map((h, idx) => {

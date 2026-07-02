@@ -55,14 +55,14 @@ export default function HeroCarousel({ items }: { items: HeroItem[] }) {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Backdrop: ảnh bìa mờ, crossfade theo slide */}
+      {/* Backdrop: ảnh bìa mờ + Ken Burns (zoom chậm như trailer), crossfade theo slide */}
       <div key={`bg-${i}`} className="absolute inset-0 animate-fade-in">
         {it.coverImage && (
           <img
             src={it.coverImage}
             alt=""
             aria-hidden
-            className="backdrop-img"
+            className="backdrop-img kenburns"
             onError={(e) => { e.currentTarget.style.opacity = '0' }}
           />
         )}
@@ -70,7 +70,7 @@ export default function HeroCarousel({ items }: { items: HeroItem[] }) {
       </div>
 
       <div className="container relative">
-        <div key={`fg-${i}`} className="flex items-end gap-5 sm:gap-10 pt-14 pb-10 sm:pt-20 sm:pb-14 min-h-[400px] sm:min-h-[480px] animate-slide-up">
+        <div key={`fg-${i}`} className="flex items-end gap-5 sm:gap-10 pt-14 pb-10 sm:pt-24 sm:pb-16 min-h-[420px] sm:min-h-[560px] lg:min-h-[72vh] animate-slide-up">
 
           {/* Bìa — trên mobile nhỏ gọn, desktop lớn. Tai mèo = chữ ký Bongmeow */}
           <Link href={`/truyen/${it.slug}`} className="group relative flex-shrink-0 w-28 sm:w-44 lg:w-52">
@@ -92,7 +92,7 @@ export default function HeroCarousel({ items }: { items: HeroItem[] }) {
             </div>
 
             <Link href={`/truyen/${it.slug}`}>
-              <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-[1.02] tracking-tight line-clamp-2 hover:text-primary transition-colors">
+              <h2 className="font-display text-3xl sm:text-5xl lg:text-[68px] font-extrabold text-foreground leading-[1.16] pb-1 line-clamp-2 hover:text-primary transition-colors">
                 {it.title}
               </h2>
             </Link>

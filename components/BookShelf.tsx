@@ -2,26 +2,24 @@ import Link from 'next/link'
 import TruyenCard from './TruyenCard'
 import { ChevronRight } from './icons'
 
-// Kệ sách cuộn ngang — tiêu đề display lớn kiểu cinematic.
+// Kệ sách cuộn ngang — tiêu đề editorial: overline nhỏ + serif lớn.
 export default function BookShelf({
-  icon: Icon, title, href, items, accent = 'primary',
+  title, href, items, overline,
 }: {
-  icon: any
   title: string
   href: string
   items: any[]
-  accent?: 'primary' | 'accent'
+  overline?: string
 }) {
   if (!items || items.length === 0) return null
-  const iconCls = accent === 'accent' ? 'text-accent' : 'text-primary'
   return (
-    <section className="mb-10 sm:mb-12">
-      <div className="flex items-end justify-between mb-4">
-        <h2 className="flex items-center gap-2.5 font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
-          <Icon className={`w-6 h-6 ${iconCls}`} />
-          {title}
-        </h2>
-        <Link href={href} className="flex items-center gap-0.5 text-sm font-semibold text-muted hover:text-primary transition-colors flex-shrink-0 pb-0.5">
+    <section className="mb-10 sm:mb-14">
+      <div className="flex items-end justify-between mb-5">
+        <div>
+          {overline && <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-1.5">{overline}</p>}
+          <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground">{title}</h2>
+        </div>
+        <Link href={href} className="flex items-center gap-0.5 text-sm font-semibold text-muted hover:text-primary transition-colors flex-shrink-0 pb-1">
           Tất cả <ChevronRight className="w-4 h-4" />
         </Link>
       </div>

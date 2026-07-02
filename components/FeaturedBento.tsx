@@ -54,10 +54,12 @@ export default function FeaturedBento({ items }: { items: Item[] }) {
   const smalls = rest.slice(0, 4)
   return (
     <section className="mb-10 sm:mb-12">
-      <h2 className="flex items-center gap-2.5 font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground mb-4">
-        <Sparkle className="w-6 h-6 text-primary" />
-        Tuyển chọn tuần này
-      </h2>
+      <div className="mb-5">
+        <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-1.5">
+          <Sparkle className="w-4 h-4" /> Biên tập chọn
+        </p>
+        <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground">Tuyển chọn tuần này</h2>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 md:auto-rows-[160px]">
         <Tile t={big} big />
         {smalls.map((t) => <Tile key={t.id} t={t} />)}

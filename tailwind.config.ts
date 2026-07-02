@@ -78,6 +78,7 @@ const config: Config = {
         '4xl': ['38px', { lineHeight: '1.08' }],
         '5xl': ['48px', { lineHeight: '1.04' }],
         '6xl': ['60px', { lineHeight: '1' }],
+        '7xl': ['74px', { lineHeight: '0.98' }],
       },
       borderRadius: {
         'sm': '6px',

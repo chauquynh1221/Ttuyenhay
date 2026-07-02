@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Be_Vietnam_Pro, Bricolage_Grotesque } from 'next/font/google'
+import { Be_Vietnam_Pro, Playfair_Display, Literata } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import NavigationWrapper from '@/components/NavigationWrapper'
@@ -7,8 +7,10 @@ import Footer from '@/components/Footer'
 import ToastProvider from '@/components/Toast'
 import MobileTabBar from '@/components/MobileTabBar'
 import AntiDevtools from '@/components/AntiDevtools'
+import dbConnect from '@/lib/mongodb'
+import GenreModel from '@/models/Genre'
 
-// Body/UI: Be Vietnam Pro (hiện đại, hỗ trợ tiếng Việt chuẩn) — giữ tên biến --font-inter
+// Body/UI: Be Vietnam Pro (hiện đại, tiếng Việt chuẩn) — giữ tên biến --font-inter
 const bodyFont = Be_Vietnam_Pro({
   subsets: ['latin', 'vietnamese'],
   weight: ['400', '500', '600', '700', '800'],
@@ -16,10 +18,17 @@ const bodyFont = Be_Vietnam_Pro({
   display: 'swap',
 })
 
-// Display/tiêu đề: Bricolage Grotesque (đậm, có cá tính, chuẩn cinematic) — map vào --font-lexend
-const displayFont = Bricolage_Grotesque({
+// Display/tiêu đề: Playfair Display (serif "áp phích phim / văn học") — map vào --font-lexend
+const displayFont = Playfair_Display({
   subsets: ['latin', 'vietnamese'],
   variable: '--font-lexend',
+  display: 'swap',
+})
+
+// Chữ đọc chương: Literata (font sách điện tử, đẹp cả trên Android)
+const readingFont = Literata({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-reading',
   display: 'swap',
 })
 
@@ -47,20 +56,33 @@ export const viewport: Viewport = {
 // Dark là MẶC ĐỊNH (cinematic) — chỉ về light khi người dùng đã chọn.
 const themeScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':true;if(d)document.documentElement.classList.add('dark');}catch(e){document.documentElement.classList.add('dark');}})();`
 
-export default function RootLayout({
+// Thể loại cho dropdown trên header (query DB trực tiếp, lỗi thì vẫn render không thể loại)
+async function getGenres(): Promise<{ name: string; slug: string }[]> {
+  try {
+    await dbConnect()
+    const genres = await GenreModel.find({}).sort({ name: 1 }).select('name slug').lean() as any[]
+    return genres.map((g) => ({ name: g.name, slug: g.slug }))
+  } catch {
+    return []
+  }
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const genres = await getGenres()
+
   return (
-    <html lang="vi" className={`${bodyFont.variable} ${displayFont.variable}`} suppressHydrationWarning>
+    <html lang="vi" className={`${bodyFont.variable} ${displayFont.variable} ${readingFont.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-screen bg-bg ambient-glow text-foreground antialiased">
         <ToastProvider>
           <AntiDevtools />
-          <Header />
+          <Header genres={genres} />
           <NavigationWrapper />
           <main className="min-h-[60vh]">
             {children}
