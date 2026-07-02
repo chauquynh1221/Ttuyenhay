@@ -27,12 +27,12 @@ export default function ContinueReading() {
   if (valid.length === 0) return null
 
   return (
-    <section className="mb-8">
-      <div className="flex items-center gap-2 mb-4">
-        <Clock className="w-5 h-5 text-primary" />
-        <h2 className="text-base sm:text-lg font-bold uppercase tracking-wide text-foreground">Đang đọc dở</h2>
+    <section className="mb-10 sm:mb-12">
+      <div className="flex items-center gap-2.5 mb-4">
+        <Clock className="w-6 h-6 text-primary" />
+        <h2 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">Đọc tiếp</h2>
       </div>
-      <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+      <div className="flex gap-3.5 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:-mx-1 sm:px-1">
         {valid.map((h, idx) => {
           const t = h.truyenId!
           const ch = h.chapterId?.chapterNumber
@@ -41,21 +41,17 @@ export default function ContinueReading() {
           return (
             <Link key={idx} href={ch ? `/truyen/${t.slug}/${ch}` : `/truyen/${t.slug}`}
               className="group flex-shrink-0 w-28 sm:w-32">
-              <div className="card overflow-hidden">
-                <div className="book-cover">
-                  <Cover src={t.coverImage} title={t.title} />
-                  <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[10px] font-semibold px-1.5 py-1 flex items-center justify-between">
-                    <span>{ch ? `C.${ch}` : 'Đọc tiếp'}</span>
-                    <ChevronRight className="w-3 h-3" />
-                  </span>
-                  {pct > 0 && (
-                    <span className="absolute top-0 left-0 h-1 bg-primary" style={{ width: `${pct}%` }} />
-                  )}
-                </div>
-                <div className="p-2">
-                  <h3 className="text-[12px] font-medium text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">{t.title}</h3>
-                </div>
+              <div className="book-cover shadow-card ring-1 ring-white/5 group-hover:-translate-y-1 transition-transform duration-300">
+                <Cover src={t.coverImage} title={t.title} />
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-black/0 text-white text-[11px] font-semibold px-2 pt-4 pb-1.5 flex items-center justify-between">
+                  <span>{ch ? `C.${ch}` : 'Đọc tiếp'}</span>
+                  <ChevronRight className="w-3 h-3" />
+                </span>
+                {pct > 0 && (
+                  <span className="absolute bottom-0 left-0 h-[3px] bg-primary z-10" style={{ width: `${pct}%` }} />
+                )}
               </div>
+              <h3 className="pt-2 px-0.5 text-xs font-medium text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">{t.title}</h3>
             </Link>
           )
         })}

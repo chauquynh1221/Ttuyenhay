@@ -11,14 +11,14 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
 
   return (
-    <header className="site-header sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border">
+    <header className="site-header sticky top-0 z-50 bg-header/85 backdrop-blur-xl border-b border-border/60">
       <div className="container">
-        <div className="flex items-center gap-3 h-14">
+        <div className="flex items-center gap-3 h-16">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Bongmeow">
             <CatLogo className="w-9 h-9 flex-shrink-0" />
-            <span className="font-display font-extrabold text-lg tracking-tight text-header-foreground leading-none whitespace-nowrap">
+            <span className="font-display font-extrabold text-xl tracking-tight text-header-foreground leading-none whitespace-nowrap">
               Bong<span className="text-primary">meow</span>
             </span>
           </Link>

@@ -4,8 +4,6 @@ import { Crown, Star } from './icons'
 
 interface RItem { id: string; title: string; slug: string; coverImage?: string; rating?: number; views?: number }
 
-const PODIUM = ['bg-primary', 'bg-[#D98BA6]', 'bg-[#C9A227]']
-
 function fmtViews(v?: number) {
   if (!v) return null
   if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
@@ -13,53 +11,48 @@ function fmtViews(v?: number) {
   return String(v)
 }
 
+// "Top 10" kiểu Netflix: số thứ hạng khổng lồ viền amber chồng sau bìa, rail cuộn ngang.
 export default function RankingBand({ items }: { items: RItem[] }) {
   if (!items || items.length === 0) return null
-  const top3 = items.slice(0, 3)
-  const rest = items.slice(3, 9)
+  const top = items.slice(0, 10)
 
   return (
-    <section className="my-10 rounded-3xl border border-border bg-gradient-to-b from-surface-2 to-surface p-5 sm:p-8">
-      <div className="flex items-center gap-2.5 mb-6">
-        <span className="grid place-items-center w-9 h-9 rounded-2xl bg-primary-soft text-primary"><Crown className="w-5 h-5" /></span>
-        <h2 className="text-lg sm:text-xl font-extrabold text-foreground">Bảng vàng Bongmeow</h2>
-        <span className="text-xs text-muted-2">— truyện được yêu thích nhất</span>
+    <section className="mb-10 sm:mb-12">
+      <div className="flex items-center gap-2.5 mb-5">
+        <Crown className="w-6 h-6 text-primary" />
+        <h2 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">Top truyện được đọc nhiều</h2>
       </div>
 
-      {/* Podium top 3 — số 1 ở giữa & cao nhất */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-6 items-end max-w-xl mx-auto">
-        {top3.map((t, i) => {
-          const orderCls = i === 0 ? 'order-2' : i === 1 ? 'order-1' : 'order-3'
-          const elevate = i === 0 ? 'sm:-translate-y-4' : ''
-          return (
-            <Link key={t.id} href={`/truyen/${t.slug}`} className={`group text-center ${orderCls}`}>
-              <div className={`relative transition-transform ${elevate}`}>
-                <div className="book-cover shadow-card"><Cover src={t.coverImage} title={t.title} /></div>
-                <span className={`absolute -top-3 left-1/2 -translate-x-1/2 grid place-items-center w-8 h-8 rounded-full text-white text-sm font-extrabold shadow-pop ring-2 ring-surface ${PODIUM[i]}`}>{i + 1}</span>
-              </div>
-              <h3 className="mt-3 text-[13px] font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">{t.title}</h3>
-              {t.rating ? (
-                <div className="mt-0.5 text-[11px] text-muted-2 flex items-center justify-center gap-0.5">
-                  <Star filled className="w-3 h-3 text-yellow-400" />{t.rating.toFixed(1)}
+      <div className="flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4 sm:-mx-1 sm:px-1 snap-x">
+        {top.map((t, i) => (
+          <Link key={t.id} href={`/truyen/${t.slug}`} className="group flex-shrink-0 snap-start">
+            <div className="flex items-end">
+              {/* Số thứ hạng khổng lồ — nằm sau bìa */}
+              <span className="rank-outline relative z-0 text-[84px] sm:text-[112px] translate-x-3.5 sm:translate-x-5 translate-y-2">
+                {i + 1}
+              </span>
+              <div className="relative z-10 w-[108px] sm:w-[132px]">
+                <div className="book-cover shadow-card ring-1 ring-white/5 group-hover:-translate-y-1.5 transition-transform duration-300">
+                  <Cover src={t.coverImage} title={t.title} />
+                  {t.rating ? (
+                    <span className="absolute bottom-1.5 left-1.5 z-10 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-black/70 text-white text-[11px] font-semibold backdrop-blur-sm">
+                      <Star filled className="w-3 h-3 text-[#F6B14E]" />{t.rating.toFixed(1)}
+                    </span>
+                  ) : null}
                 </div>
-              ) : null}
-            </Link>
-          )
-        })}
+              </div>
+            </div>
+            <div className="mt-2.5 w-[150px] sm:w-[184px] pl-6 sm:pl-8">
+              <h3 className="text-xs sm:text-sm font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                {t.title}
+              </h3>
+              {fmtViews(t.views) && (
+                <p className="mt-0.5 text-[11px] text-muted-2">{fmtViews(t.views)} lượt đọc</p>
+              )}
+            </div>
+          </Link>
+        ))}
       </div>
-
-      {/* Rest 4–9 */}
-      {rest.length > 0 && (
-        <div className="mt-7 grid sm:grid-cols-2 gap-x-8 gap-y-0.5 max-w-3xl mx-auto">
-          {rest.map((t, i) => (
-            <Link key={t.id} href={`/truyen/${t.slug}`} className="flex items-center gap-3 py-2 border-b border-border/60 group">
-              <span className="w-6 text-center text-sm font-bold text-muted-2">{i + 4}</span>
-              <span className="flex-1 min-w-0 text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">{t.title}</span>
-              {fmtViews(t.views) && <span className="text-[11px] text-muted-2 flex-shrink-0">{fmtViews(t.views)} 👁</span>}
-            </Link>
-          ))}
-        </div>
-      )}
     </section>
   )
 }

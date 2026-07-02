@@ -68,14 +68,16 @@ const config: Config = {
         reading: ['var(--reading-font)', 'Georgia', 'serif'],
       },
       fontSize: {
-        'xs': ['11px', { lineHeight: '1.5' }],
-        'sm': ['13px', { lineHeight: '1.5' }],
-        'base': ['15px', { lineHeight: '1.6' }],
-        'lg': ['17px', { lineHeight: '1.5' }],
-        'xl': ['19px', { lineHeight: '1.4' }],
-        '2xl': ['22px', { lineHeight: '1.3' }],
-        '3xl': ['26px', { lineHeight: '1.2' }],
-        '4xl': ['32px', { lineHeight: '1.1' }],
+        'xs': ['12px', { lineHeight: '1.5' }],
+        'sm': ['14px', { lineHeight: '1.5' }],
+        'base': ['16px', { lineHeight: '1.6' }],
+        'lg': ['18px', { lineHeight: '1.5' }],
+        'xl': ['20px', { lineHeight: '1.4' }],
+        '2xl': ['24px', { lineHeight: '1.3' }],
+        '3xl': ['30px', { lineHeight: '1.15' }],
+        '4xl': ['38px', { lineHeight: '1.08' }],
+        '5xl': ['48px', { lineHeight: '1.04' }],
+        '6xl': ['60px', { lineHeight: '1' }],
       },
       borderRadius: {
         'sm': '6px',
@@ -96,7 +98,7 @@ const config: Config = {
         'soft-lg': '0 8px 24px rgb(0 0 0 / 0.12)',
       },
       maxWidth: {
-        'container': '1240px',
+        'container': '1280px',
         'reading': '720px',
       },
       animation: {

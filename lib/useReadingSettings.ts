@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-export type ReadingThemeKey = 'system' | 'paper' | 'sepia' | 'mint' | 'dark'
+export type ReadingThemeKey = 'system' | 'paper' | 'sepia' | 'mint' | 'dark' | 'black'
 
 export interface ReadingSettings {
   fontSize: number      // px
@@ -37,6 +37,7 @@ export const READING_THEMES: Record<
   sepia: { label: 'Kem', bg: '#f5ecd9', fg: '#4a3f2e', swatch: '#f5ecd9' },
   mint: { label: 'Xanh', bg: '#e8f1e7', fg: '#22302a', swatch: '#e8f1e7' },
   dark: { label: 'Tối', bg: '#1b1d22', fg: '#cfcdc8', swatch: '#1b1d22' },
+  black: { label: 'OLED', bg: '#000000', fg: '#c2c6ce', swatch: '#000000' },
 }
 
 const STORAGE_KEY = 'tf_reading_settings'

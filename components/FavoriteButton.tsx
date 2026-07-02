@@ -81,7 +81,7 @@ export default function FavoriteButton({ truyenId, currentChapter = 1 }: Favorit
         <button
             onClick={handleToggle}
             disabled={loading}
-            className={`btn btn-default w-full gap-2 relative disabled:opacity-50 ${isFav
+            className={`btn btn-default gap-2 relative disabled:opacity-50 ${isFav
                     ? 'bg-primary-soft text-primary border-primary'
                     : 'hover:text-primary'
                 }`}

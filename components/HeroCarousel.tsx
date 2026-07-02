@@ -3,8 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import Cover from './Cover'
-import Mascot from './Mascot'
-import { Star, Play, ChevronRight, CatEars, Sparkle, Cloud, Heart, Paw } from './icons'
+import { Star, Play, ChevronRight, CatEars } from './icons'
 
 export interface HeroItem {
   slug: string
@@ -16,109 +15,141 @@ export interface HeroItem {
   genres?: string[]
 }
 
+// Hero cinematic full-bleed: ảnh bìa mờ làm backdrop, tan vào nền trang.
+// Render NGOÀI .container (full chiều ngang màn hình).
 export default function HeroCarousel({ items }: { items: HeroItem[] }) {
   const [i, setI] = useState(0)
+  const [paused, setPaused] = useState(false)
   const n = items.length
-  const decorRef = useRef<HTMLDivElement>(null)
   const go = useCallback((idx: number) => setI(((idx % n) + n) % n), [n])
 
   useEffect(() => {
-    if (n <= 1) return
-    const t = setInterval(() => setI((v) => (v + 1) % n), 5500)
+    if (n <= 1 || paused) return
+    const t = setInterval(() => setI((v) => (v + 1) % n), 6500)
     return () => clearInterval(t)
-  }, [n])
+  }, [n, paused])
+
+  // Swipe đổi slide trên mobile
+  const touch = useRef<{ x: number; y: number } | null>(null)
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    touch.current = { x: t.clientX, y: t.clientY }
+  }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touch.current) return
+    const t = e.changedTouches[0]
+    const dx = t.clientX - touch.current.x
+    const dy = t.clientY - touch.current.y
+    touch.current = null
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? i + 1 : i - 1)
+  }
 
   if (n === 0) return null
   const it = items[i]
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect()
-    const mx = (e.clientX - r.left) / r.width - 0.5
-    const my = (e.clientY - r.top) / r.height - 0.5
-    if (decorRef.current) decorRef.current.style.transform = `translate(${mx * 18}px, ${my * 18}px)`
-  }
-  const onLeave = () => { if (decorRef.current) decorRef.current.style.transform = '' }
-
   return (
-    <div className="relative mb-10">
-      <CatEars className="absolute left-10 -top-[13px] z-20 w-14 h-6 text-primary drop-shadow-sm" />
+    <section
+      className="relative overflow-hidden select-none mb-8 sm:mb-10"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Backdrop: ảnh bìa mờ, crossfade theo slide */}
+      <div key={`bg-${i}`} className="absolute inset-0 animate-fade-in">
+        {it.coverImage && (
+          <img
+            src={it.coverImage}
+            alt=""
+            aria-hidden
+            className="backdrop-img"
+            onError={(e) => { e.currentTarget.style.opacity = '0' }}
+          />
+        )}
+        <div className="backdrop-fade" />
+      </div>
 
-      <div onMouseMove={onMove} onMouseLeave={onLeave}
-        className="relative overflow-hidden rounded-[28px] border border-border shadow-card select-none min-h-[300px] sm:min-h-[336px] mesh-pastel">
+      <div className="container relative">
+        <div key={`fg-${i}`} className="flex items-end gap-5 sm:gap-10 pt-14 pb-10 sm:pt-20 sm:pb-14 min-h-[400px] sm:min-h-[480px] animate-slide-up">
 
-        {/* Hoạ tiết bay lơ lửng — parallax theo chuột */}
-        <div ref={decorRef} className="absolute inset-0 pointer-events-none transition-transform duration-200 ease-out will-change-transform">
-          <Cloud className="absolute top-7 left-[22%] w-14 h-14 text-white/70 anim-floatx" />
-          <Cloud className="absolute bottom-8 right-[8%] w-10 h-10 text-white/60 anim-floatx" style={{ animationDelay: '1.2s' }} />
-          <Sparkle className="absolute top-8 right-[34%] w-5 h-5 text-primary/60 anim-twinkle" />
-          <Sparkle className="absolute bottom-12 left-[46%] w-4 h-4 text-accent anim-twinkle" style={{ animationDelay: '0.8s' }} />
-          <Sparkle className="absolute top-1/2 right-[6%] w-4 h-4 text-primary/50 anim-twinkle" style={{ animationDelay: '1.6s' }} />
-          <Heart className="absolute top-[30%] right-[30%] w-5 h-5 text-primary/45 anim-float" />
-          <Paw className="absolute bottom-6 left-8 w-6 h-6 text-primary/25 anim-float2" />
-          <Paw className="absolute top-10 left-[42%] w-4 h-4 text-accent/40 anim-float" style={{ animationDelay: '0.5s' }} />
-        </div>
-
-        <div className="relative flex items-center gap-4 sm:gap-6 p-5 sm:p-8">
-          {/* Bìa nghiêng */}
-          <Link href={`/truyen/${it.slug}`} className="group flex-shrink-0 w-28 sm:w-40">
-            <div className="book-cover shadow-pop -rotate-[5deg] group-hover:rotate-0 transition-transform duration-300">
+          {/* Bìa — trên mobile nhỏ gọn, desktop lớn. Tai mèo = chữ ký Bongmeow */}
+          <Link href={`/truyen/${it.slug}`} className="group relative flex-shrink-0 w-28 sm:w-44 lg:w-52">
+            <CatEars className="absolute -top-[13px] sm:-top-[17px] left-1/2 -translate-x-1/2 w-14 h-6 sm:w-[72px] sm:h-8 text-primary drop-shadow-sm z-10" />
+            <div className="book-cover !rounded-lg shadow-pop ring-1 ring-white/10 group-hover:-translate-y-1.5 transition-transform duration-300">
               <Cover src={it.coverImage} title={it.title} />
             </div>
           </Link>
 
-          {/* Thông tin */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-1 rounded-full bg-primary text-primary-fg text-[10px] font-bold uppercase tracking-wide">🐾 Nổi bật</span>
+          {/* Nội dung */}
+          <div className="flex-1 min-w-0 pb-1">
+            <div className="flex items-center gap-2.5 mb-3">
+              <span className="px-2.5 py-1 rounded bg-primary text-primary-fg text-[11px] font-bold uppercase tracking-widest">Nổi bật</span>
               {it.rating ? (
                 <span className="flex items-center gap-1 text-sm font-bold text-foreground">
-                  <Star filled className="w-4 h-4 text-yellow-400" />{it.rating.toFixed(1)}
+                  <Star filled className="w-4 h-4 text-primary" />{it.rating.toFixed(1)}
                 </span>
               ) : null}
             </div>
+
             <Link href={`/truyen/${it.slug}`}>
-              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-foreground leading-[1.1] line-clamp-2 hover:text-primary transition-colors">
+              <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-[1.02] tracking-tight line-clamp-2 hover:text-primary transition-colors">
                 {it.title}
               </h2>
             </Link>
-            {it.author && <p className="text-muted text-xs sm:text-sm mt-1.5">✍ {it.author}</p>}
-            <p className="hidden sm:block text-muted text-sm mt-2.5 line-clamp-2 max-w-md">{it.description}</p>
+
+            {it.author && <p className="text-muted text-sm sm:text-base mt-2.5 font-medium">{it.author}</p>}
+
+            <p className="hidden sm:block text-muted text-base mt-3 line-clamp-2 max-w-xl leading-relaxed">{it.description}</p>
+
             {it.genres && it.genres.length > 0 && (
-              <div className="hidden sm:flex flex-wrap gap-1.5 mt-3">
+              <div className="hidden sm:flex flex-wrap gap-2 mt-4">
                 {it.genres.slice(0, 3).map((g) => (
-                  <span key={g} className="px-2.5 py-0.5 rounded-full bg-surface/70 border border-border text-foreground/70 text-[11px] font-medium backdrop-blur-sm">{g}</span>
+                  <span key={g} className="px-3 py-1 rounded-full bg-surface-2/70 border border-border text-foreground/80 text-xs font-medium backdrop-blur-sm">{g}</span>
                 ))}
               </div>
             )}
-            <div className="flex items-center gap-2 mt-4">
-              <Link href={`/truyen/${it.slug}/1`} className="btn btn-primary shadow-[0_6px_16px_rgb(var(--primary)/0.35)]">
+
+            <div className="flex flex-wrap items-center gap-2.5 mt-5 sm:mt-6">
+              <Link href={`/truyen/${it.slug}/1`} className="btn btn-primary sm:h-12 sm:px-7 sm:text-base">
                 <Play className="w-4 h-4" /> Đọc ngay
               </Link>
-              <Link href={`/truyen/${it.slug}`} className="btn btn-default">
+              <Link href={`/truyen/${it.slug}`} className="btn btn-default sm:h-12 sm:px-7 sm:text-base">
                 Chi tiết <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
 
-          {/* Linh vật mèo chào (desktop) */}
-          <div className="hidden lg:flex flex-col items-center flex-shrink-0 w-44 relative">
-            <div className="relative mb-3 px-3.5 py-2 rounded-2xl bg-surface border border-border shadow-card text-center anim-float">
-              <p className="text-[12px] font-semibold text-foreground leading-snug">Chào cậu~ 🐾<br />Đọc gì hôm nay nào?</p>
-              <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-surface border-b border-r border-border rotate-45" />
+          {/* Rail thumbnail dọc — xem trước & chuyển slide (desktop) */}
+          {n > 1 && (
+            <div className="hidden lg:flex flex-col gap-2.5 flex-shrink-0 self-center">
+              {items.map((t, idx) => (
+                <button
+                  key={t.slug}
+                  onClick={() => go(idx)}
+                  aria-label={t.title}
+                  className={`w-12 rounded-md overflow-hidden transition-all duration-200 ${idx === i
+                    ? 'ring-2 ring-primary opacity-100'
+                    : 'ring-1 ring-white/10 opacity-45 hover:opacity-85'}`}
+                >
+                  <div className="book-cover !rounded-md">
+                    <Cover src={t.coverImage} title={t.title} />
+                  </div>
+                </button>
+              ))}
             </div>
-            <Mascot pose="wave" className="w-36 h-36 anim-float drop-shadow-[0_8px_16px_rgb(0_0_0/0.10)]" />
-          </div>
+          )}
         </div>
 
+        {/* Dots */}
         {n > 1 && (
-          <div className="absolute bottom-4 right-6 flex gap-1.5 z-10">
+          <div className="absolute bottom-4 right-4 sm:right-8 flex gap-1.5 z-10">
             {items.map((_, idx) => (
               <button key={idx} onClick={() => go(idx)} aria-label={`Slide ${idx + 1}`}
-                className={`h-1.5 rounded-full transition-all ${idx === i ? 'w-6 bg-primary' : 'w-1.5 bg-primary/30 hover:bg-primary/60'}`} />
+                className={`h-1.5 rounded-full transition-all ${idx === i ? 'w-7 bg-primary' : 'w-2 bg-foreground/25 hover:bg-foreground/50'}`} />
             ))}
           </div>
         )}
       </div>
-    </div>
+    </section>
   )
 }

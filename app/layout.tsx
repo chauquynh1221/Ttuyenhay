@@ -1,23 +1,23 @@
 import type { Metadata, Viewport } from 'next'
-import { Nunito, Baloo_2 } from 'next/font/google'
+import { Be_Vietnam_Pro, Bricolage_Grotesque } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import NavigationWrapper from '@/components/NavigationWrapper'
 import Footer from '@/components/Footer'
 import ToastProvider from '@/components/Toast'
 import MobileTabBar from '@/components/MobileTabBar'
-import BackgroundDecor from '@/components/BackgroundDecor'
 import AntiDevtools from '@/components/AntiDevtools'
 
-// Body/UI: Nunito (tròn trịa, thân thiện, dễ đọc) — giữ tên biến --font-inter để không phải sửa nơi khác
-const bodyFont = Nunito({
+// Body/UI: Be Vietnam Pro (hiện đại, hỗ trợ tiếng Việt chuẩn) — giữ tên biến --font-inter
+const bodyFont = Be_Vietnam_Pro({
   subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-inter',
   display: 'swap',
 })
 
-// Tiêu đề/logo: Baloo 2 (bo tròn, dễ thương) — map vào --font-lexend (font-display)
-const displayFont = Baloo_2({
+// Display/tiêu đề: Bricolage Grotesque (đậm, có cá tính, chuẩn cinematic) — map vào --font-lexend
+const displayFont = Bricolage_Grotesque({
   subsets: ['latin', 'vietnamese'],
   variable: '--font-lexend',
   display: 'swap',
@@ -35,16 +35,17 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0E1014' },
+    { media: '(prefers-color-scheme: light)', color: '#F6F4F0' },
+    { media: '(prefers-color-scheme: dark)', color: '#0B0D12' },
   ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
 }
 
-// Chạy TRƯỚC khi paint để chống nhấp nháy (FOUC) khi đổi theme
-const themeScript = `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+// Chạy TRƯỚC khi paint để chống nhấp nháy (FOUC).
+// Dark là MẶC ĐỊNH (cinematic) — chỉ về light khi người dùng đã chọn.
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':true;if(d)document.documentElement.classList.add('dark');}catch(e){document.documentElement.classList.add('dark');}})();`
 
 export default function RootLayout({
   children,
@@ -56,11 +57,9 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-screen bg-bg paw-pattern text-foreground antialiased">
+      <body className="min-h-screen bg-bg ambient-glow text-foreground antialiased">
         <ToastProvider>
           <AntiDevtools />
-          <div className="grain" aria-hidden />
-          <BackgroundDecor />
           <Header />
           <NavigationWrapper />
           <main className="min-h-[60vh]">

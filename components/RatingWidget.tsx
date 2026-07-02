@@ -91,9 +91,9 @@ export default function RatingWidget({ truyenId }: RatingWidgetProps) {
                             <svg
                                 viewBox="0 0 24 24"
                                 className={`w-full h-5 transition-colors ${filled
-                                        ? 'text-yellow-400 fill-yellow-400'
-                                        : 'text-border fill-border'
-                                    } ${loggedIn ? 'group-hover:text-yellow-300 group-hover:fill-yellow-300' : ''}`}
+                                        ? 'text-primary fill-[rgb(var(--primary))]'
+                                        : 'text-border fill-[rgb(var(--border))]'
+                                    } ${loggedIn ? 'group-hover:text-primary-hover group-hover:fill-[rgb(var(--primary-hover))]' : ''}`}
                             >
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>

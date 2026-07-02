@@ -8,6 +8,7 @@ import ShareButtons from '@/components/ShareButtons'
 import CommentSection from '@/components/CommentSection'
 import RatingWidget from '@/components/RatingWidget'
 import RelatedTruyen from '@/components/RelatedTruyen'
+import { CatEars } from '@/components/icons'
 import { notFound } from 'next/navigation'
 import { slugify } from '@/lib/slugify'
 import dbConnect from '@/lib/mongodb'
@@ -79,11 +80,11 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Meta({ value, label }: { value: string; label: string }) {
   return (
-    <div className="text-center">
-      <div className="text-lg sm:text-xl font-bold text-foreground">{value}</div>
-      <div className="text-[11px] text-muted mt-0.5">{label}</div>
+    <div className="flex items-baseline gap-1.5">
+      <span className="text-base sm:text-lg font-bold text-foreground">{value}</span>
+      <span className="text-xs text-muted">{label}</span>
     </div>
   )
 }
@@ -102,69 +103,78 @@ export default async function TruyenDetailPage({ params, searchParams }: PagePro
     : truyen.views >= 1000 ? `${(truyen.views / 1000).toFixed(0)}K` : truyen.views.toLocaleString('vi-VN')
 
   return (
-    <div className="container py-4 sm:py-6">
-      <Breadcrumb items={[{ label: truyen.title }]} />
+    <>
+      {/* === CINEMATIC HEADER: full-bleed, backdrop từ bìa === */}
+      <section className="relative overflow-hidden">
+        {truyen.coverImage && (
+          <img src={truyen.coverImage} alt="" aria-hidden className="backdrop-img" />
+        )}
+        <div className="backdrop-fade" />
 
+        <div className="container relative pt-4 sm:pt-6 pb-7 sm:pb-10">
+          <Breadcrumb items={[{ label: truyen.title }]} />
+
+          <div className="flex items-end gap-5 sm:gap-8 mt-2 sm:mt-6">
+            {/* Cover — tai mèo = chữ ký Bongmeow */}
+            <div className="relative flex-shrink-0 w-32 sm:w-44 lg:w-52">
+              <CatEars className="absolute -top-[13px] sm:-top-[17px] left-1/2 -translate-x-1/2 w-14 h-6 sm:w-[72px] sm:h-8 text-primary drop-shadow-sm z-10" />
+              <div className="book-cover !rounded-lg shadow-pop ring-1 ring-white/10">
+                <Cover src={truyen.coverImage} title={truyen.title} />
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0 pb-0.5">
+              <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
+                {truyen.genres.slice(0, 4).map((g) => (
+                  <Link key={g} href={`/the-loai/${slugify(g)}`} className="inline-flex px-2.5 py-1 bg-surface-2/70 border border-border text-foreground/80 rounded-full text-xs font-medium backdrop-blur-sm hover:border-primary/60 hover:text-primary transition-colors">{g}</Link>
+                ))}
+                <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${truyen.status === 'completed' ? 'bg-[rgb(var(--success)/0.15)] text-[rgb(var(--success))]' : 'bg-[rgb(var(--warning)/0.15)] text-[rgb(var(--warning))]'}`}>{statusLabel}</span>
+              </div>
+
+              <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-foreground leading-[1.05] tracking-tight">{truyen.title}</h1>
+
+              <Link href={`/tac-gia/${encodeURIComponent(truyen.author)}`} className="inline-block mt-2 text-sm sm:text-base font-medium text-muted hover:text-primary transition-colors">
+                {truyen.author}
+              </Link>
+
+              {/* Meta inline */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mt-3 sm:mt-4">
+                <Meta value={Number(truyen.rating).toFixed(1)} label="★ đánh giá" />
+                <Meta value={viewsLabel} label="lượt đọc" />
+                <Meta value={String(truyen.totalChapters)} label="chương" />
+              </div>
+
+              {/* Actions — desktop */}
+              <div className="hidden sm:flex flex-wrap items-center gap-2.5 mt-5">
+                <Link href={`/truyen/${truyen.slug}/1`} className="btn btn-primary px-7">Đọc từ đầu</Link>
+                <Link href={`/truyen/${truyen.slug}/${latestChapterNumber}`} className="btn btn-default px-6">Đọc mới nhất</Link>
+                <FavoriteButton truyenId={truyen.id} currentChapter={1} />
+                <FollowButton slug={truyen.slug} title={truyen.title} />
+              </div>
+            </div>
+          </div>
+
+          {/* Actions — mobile (hàng riêng, full width) */}
+          <div className="sm:hidden grid grid-cols-2 gap-2.5 mt-5">
+            <Link href={`/truyen/${truyen.slug}/1`} className="btn btn-primary">Đọc từ đầu</Link>
+            <Link href={`/truyen/${truyen.slug}/${latestChapterNumber}`} className="btn btn-default">Đọc mới nhất</Link>
+            <FavoriteButton truyenId={truyen.id} currentChapter={1} />
+            <FollowButton slug={truyen.slug} title={truyen.title} />
+          </div>
+
+          <div className="mt-4"><ShareButtons url={`/truyen/${truyen.slug}`} title={truyen.title} /></div>
+        </div>
+      </section>
+
+      <div className="container pb-6 sm:pb-10">
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex-1 min-w-0 space-y-4">
 
-          {/* === INFO CARD === */}
+          {/* === GIỚI THIỆU === */}
           <div className="card p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row gap-5">
-              {/* Cover */}
-              <div className="flex-shrink-0 w-36 sm:w-44 mx-auto sm:mx-0">
-                <div className="book-cover shadow-card">
-                  <Cover src={truyen.coverImage} title={truyen.title} />
-                </div>
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight mb-3 text-center sm:text-left">{truyen.title}</h1>
-
-                <div className="space-y-1.5 text-sm mb-4">
-                  <div className="flex gap-2">
-                    <span className="text-muted w-20 flex-shrink-0">Tác giả</span>
-                    <Link href={`/tac-gia/${encodeURIComponent(truyen.author)}`} className="font-semibold text-foreground hover:text-primary transition-colors">{truyen.author}</Link>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-muted w-20 flex-shrink-0 pt-0.5">Thể loại</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {truyen.genres.map((g) => (
-                        <Link key={g} href={`/the-loai/${slugify(g)}`} className="inline-flex px-2.5 py-0.5 bg-surface-2 border border-border text-muted rounded text-xs font-medium hover:bg-primary hover:border-primary hover:text-primary-fg transition-colors">{g}</Link>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <span className="text-muted w-20 flex-shrink-0">Trạng thái</span>
-                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${truyen.status === 'completed' ? 'bg-[rgb(var(--success)/0.12)] text-[rgb(var(--success))]' : 'bg-[rgb(var(--warning)/0.14)] text-[rgb(var(--warning))]'}`}>{statusLabel}</span>
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-2 mb-4 p-3 bg-surface-2 border border-border rounded-lg">
-                  <Stat value={Number(truyen.rating).toFixed(1)} label="Đánh giá" />
-                  <div className="border-x border-border"><Stat value={viewsLabel} label="Lượt xem" /></div>
-                  <Stat value={String(truyen.totalChapters)} label="Chương" />
-                </div>
-
-                {/* Actions */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <Link href={`/truyen/${truyen.slug}/1`} className="btn btn-primary">Đọc từ đầu</Link>
-                  <Link href={`/truyen/${truyen.slug}/${latestChapterNumber}`} className="btn btn-secondary">Đọc mới nhất</Link>
-                  <FavoriteButton truyenId={truyen.id} currentChapter={1} />
-                  <FollowButton slug={truyen.slug} title={truyen.title} />
-                </div>
-
-                <div className="pt-3"><ShareButtons url={`/truyen/${truyen.slug}`} title={truyen.title} /></div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="mt-5 pt-5 border-t border-border">
-              <h2 className="text-sm font-bold uppercase text-muted tracking-wide mb-2">Giới thiệu</h2>
-              <div className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line">{truyen.description}</div>
-            </div>
+            <h2 className="text-sm font-bold uppercase text-muted tracking-wide mb-2.5">Giới thiệu</h2>
+            <div className="text-[15px] text-foreground/90 leading-relaxed whitespace-pre-line">{truyen.description}</div>
           </div>
 
           {/* === CHAPTER LIST === */}
@@ -204,6 +214,7 @@ export default async function TruyenDetailPage({ params, searchParams }: PagePro
           <RatingWidget truyenId={truyen.id} />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

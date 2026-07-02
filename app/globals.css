@@ -3,72 +3,73 @@
 @tailwind utilities;
 
 /* ====================================================================
-   TRUYENFULL CLONE — Design System 2026
-   Token-based, full light/dark. Biến màu dạng RGB triplet (alpha-aware).
+   BONGMEOW — CINEMATIC DARK Design System
+   Dark-first (mặc định tối), token RGB triplet (alpha-aware).
+   Chất liệu: nền đen xanh thẳm + accent hổ phách + ảnh bìa làm ambient.
    ==================================================================== */
 
 :root {
-  /* === BONGMEOW · Coquette Pastel (light) === */
-  --bg: 255 246 248;          /* #FFF6F8 kem hồng */
+  /* === Light (phụ) · "Giấy ấm" — cho người thích nền sáng === */
+  --bg: 246 244 240;          /* #F6F4F0 giấy ấm */
   --surface: 255 255 255;
-  --surface-2: 255 240 243;   /* #FFF0F3 hồng rất nhạt */
-  --surface-3: 252 227 234;   /* #FCE3EA */
+  --surface-2: 241 238 232;   /* #F1EEE8 */
+  --surface-3: 231 226 217;   /* #E7E2D9 */
 
-  --foreground: 58 46 51;     /* #3A2E33 nâu mực ấm */
-  --muted: 140 120 128;       /* #8C7880 */
-  --muted-2: 186 168 176;     /* #BAA8B0 */
+  --foreground: 28 32 45;     /* #1C202D mực xanh đen */
+  --muted: 101 108 126;       /* #656C7E */
+  --muted-2: 154 160 175;     /* #9AA0AF */
 
-  --border: 243 220 227;      /* #F3DCE3 hồng-xám mềm */
-  --border-strong: 233 200 210;
+  --border: 227 222 212;      /* #E3DED4 */
+  --border-strong: 205 199 186;
 
-  --header: 255 251 253;      /* kem trắng */
-  --header-foreground: 58 46 51;
+  --header: 252 251 249;
+  --header-foreground: 28 32 45;
 
-  /* Brand: hồng đào */
-  --primary: 242 109 139;     /* #F26D8B */
-  --primary-hover: 232 85 120;/* #E85578 */
+  /* Brand: hổ phách (amber) */
+  --primary: 187 119 20;      /* #BB7714 amber đậm — đủ tương phản nền sáng */
+  --primary-hover: 158 99 14;
   --primary-foreground: 255 255 255;
-  --primary-soft: 255 231 238;/* #FFE7EE */
+  --primary-soft: 247 233 209;/* #F7E9D1 */
 
-  /* Accent: xanh trời */
-  --accent: 143 184 237;      /* #8FB8ED */
-  --accent-soft: 227 238 252; /* #E3EEFC */
+  /* Accent: xanh khí quyển */
+  --accent: 36 122 165;       /* #247AA5 */
+  --accent-soft: 222 238 246;
 
-  --success: 60 178 133;
-  --info: 143 184 237;
-  --warning: 235 168 92;
+  --success: 34 158 110;
+  --info: 36 122 165;
+  --warning: 200 130 40;
 
   --reading-font: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   color-scheme: light;
 }
 
 .dark {
-  /* === BONGMEOW · Đêm ấm (dark) === */
-  --bg: 27 22 32;             /* #1B1620 tím trầm */
-  --surface: 36 30 43;        /* #241E2B */
-  --surface-2: 44 37 52;      /* #2C2534 */
-  --surface-3: 54 46 64;      /* #362E40 */
+  /* === Dark (mặc định) · "Rạp chiếu đêm" === */
+  --bg: 11 13 18;             /* #0B0D12 đen xanh thẳm */
+  --surface: 19 23 33;        /* #131721 */
+  --surface-2: 28 33 46;      /* #1C212E */
+  --surface-3: 38 45 62;      /* #262D3E */
 
-  --foreground: 237 227 232;  /* #EDE3E8 kem */
-  --muted: 180 162 172;
-  --muted-2: 126 110 120;
+  --foreground: 233 237 245;  /* #E9EDF5 */
+  --muted: 154 163 181;       /* #9AA3B5 */
+  --muted-2: 100 108 126;     /* #646C7E */
 
-  --border: 58 49 67;         /* #3A3143 */
-  --border-strong: 80 68 92;
+  --border: 42 49 65;         /* #2A3141 */
+  --border-strong: 60 69 90;  /* #3C455A */
 
-  --header: 32 26 40;         /* #201A28 */
-  --header-foreground: 237 227 232;
+  --header: 13 16 23;         /* #0D1017 */
+  --header-foreground: 233 237 245;
 
-  --primary: 255 157 180;     /* #FF9DB4 hồng sáng */
-  --primary-hover: 255 177 196;
-  --primary-foreground: 42 22 32;  /* chữ tối trên nút hồng sáng */
-  --primary-soft: 58 38 48;   /* #3A2630 */
+  --primary: 246 177 78;      /* #F6B14E hổ phách sáng */
+  --primary-hover: 255 196 106;
+  --primary-foreground: 31 22 8;   /* chữ tối trên nút amber */
+  --primary-soft: 58 45 24;   /* #3A2D18 */
 
-  --accent: 167 199 240;      /* #A7C7F0 */
-  --accent-soft: 45 41 58;
+  --accent: 96 196 233;       /* #60C4E9 */
+  --accent-soft: 23 48 60;    /* #17303C */
 
   --success: 76 205 150;
-  --info: 167 199 240;
+  --info: 96 196 233;
   --warning: 235 178 110;
   color-scheme: dark;
 }
@@ -83,7 +84,7 @@ html {
 
 body {
   font-family: var(--font-inter), 'Segoe UI', system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.6;
   color: rgb(var(--foreground));
   background-color: rgb(var(--bg));
@@ -101,8 +102,8 @@ body {
 h1, h2, h3, h4, h5, h6 {
   color: rgb(var(--foreground));
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -110,14 +111,14 @@ a { color: inherit; text-decoration: none; }
 /* === LAYOUT === */
 .container {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1280px;
   margin: 0 auto;
-  /* chỉ set padding NGANG — dùng padding-left/right để KHÔNG ghi đè py-* (padding dọc) */
-  padding-left: 0.875rem;
-  padding-right: 0.875rem;
+  /* chỉ set padding NGANG — không ghi đè py-* */
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
-@media (min-width: 640px) { .container { padding-left: 1.25rem; padding-right: 1.25rem; } }
-@media (min-width: 1024px) { .container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+@media (min-width: 640px) { .container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+@media (min-width: 1024px) { .container { padding-left: 2rem; padding-right: 2rem; } }
 
 /* ====================================================================
    COMPONENT LAYER
@@ -126,53 +127,60 @@ a { color: inherit; text-decoration: none; }
 
   /* === BUTTONS === */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-5 h-10 text-sm font-semibold rounded-full
+    @apply inline-flex items-center justify-center gap-2 px-5 h-11 text-sm font-semibold rounded-md
            border border-transparent cursor-pointer whitespace-nowrap select-none
-           transition-all duration-150 active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+           transition-all duration-150 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
-  .btn-sm { @apply h-8 px-4 text-[13px] rounded-full; }
+  .btn-sm { @apply h-9 px-4 text-[13px]; }
   .btn-lg { @apply h-12 px-7 text-base; }
 
   .btn-primary {
     @apply bg-primary text-primary-fg border-primary;
+    box-shadow: 0 6px 20px rgb(var(--primary) / 0.28);
   }
   .btn-primary:hover:not(:disabled) { background-color: rgb(var(--primary-hover)); border-color: rgb(var(--primary-hover)); }
 
   .btn-secondary {
-    @apply bg-foreground text-surface;
+    @apply bg-foreground text-bg;
   }
   .btn-secondary:hover:not(:disabled) { opacity: 0.88; }
 
   .btn-default {
-    @apply bg-surface text-foreground border-border;
+    @apply bg-surface-2 text-foreground border-border;
   }
-  .btn-default:hover:not(:disabled) { background-color: rgb(var(--surface-2)); border-color: rgb(var(--border-strong)); }
+  .btn-default:hover:not(:disabled) { background-color: rgb(var(--surface-3)); border-color: rgb(var(--border-strong)); }
 
   .btn-ghost {
     @apply bg-transparent text-muted border-transparent;
   }
   .btn-ghost:hover:not(:disabled) { background-color: rgb(var(--surface-2)); color: rgb(var(--foreground)); }
 
+  /* Nút kính mờ — đặt TRÊN ảnh backdrop */
+  .btn-glass {
+    @apply bg-white/10 text-white border-white/20 backdrop-blur-md;
+  }
+  .btn-glass:hover:not(:disabled) { background-color: rgb(255 255 255 / 0.18); }
+
   /* === CARD === */
   .card {
-    @apply bg-surface border border-border rounded-2xl shadow-card;
+    @apply bg-surface border border-border rounded-xl shadow-card;
   }
 
-  /* === BADGES (sticker bo tròn) === */
+  /* === BADGES === */
   .label {
-    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-full;
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded;
     line-height: 1.5;
   }
   .label-hot { @apply bg-primary text-primary-fg; }
   .label-full { background-color: rgb(var(--success)); color: #fff; }
-  .label-new { background-color: rgb(var(--info)); color: #fff; }
+  .label-new { background-color: rgb(var(--info)); color: #0B0D12; }
 
   /* === FORM === */
   .form-control {
-    @apply block w-full h-10 px-4 text-sm rounded-xl bg-surface text-foreground border border-border outline-none
+    @apply block w-full h-11 px-4 text-sm rounded-md bg-surface-2 text-foreground border border-border outline-none
            transition-colors placeholder:text-muted-2;
   }
-  .form-control:focus { border-color: rgb(var(--primary)); box-shadow: 0 0 0 3px rgb(var(--primary) / 0.14); }
+  .form-control:focus { border-color: rgb(var(--primary)); box-shadow: 0 0 0 3px rgb(var(--primary) / 0.16); }
 
   /* === SECTION TITLE === */
   .title-list {
@@ -192,14 +200,14 @@ a { color: inherit; text-decoration: none; }
   .pagination { @apply flex flex-wrap gap-1.5 my-5; }
   .pagination > li > a, .pagination > li > span {
     @apply flex items-center justify-center min-w-[40px] h-10 px-3 text-sm font-medium rounded-md
-           bg-surface text-foreground border border-border transition-colors;
+           bg-surface-2 text-foreground border border-border transition-colors;
   }
   .pagination > li > a:hover { background-color: rgb(var(--primary-soft)); border-color: rgb(var(--primary)); color: rgb(var(--primary)); }
   .pagination > .active > a, .pagination > .active > span { @apply bg-primary text-primary-fg border-primary; }
 
   /* === BOOK COVER === */
   .book-cover {
-    @apply relative w-full overflow-hidden rounded-xl bg-surface-3;
+    @apply relative w-full overflow-hidden rounded-md bg-surface-3;
     padding-top: 142%;
   }
   .book-cover img { @apply absolute inset-0 w-full h-full object-cover transition-transform duration-300; }
@@ -212,7 +220,7 @@ a { color: inherit; text-decoration: none; }
 .chapter-content p {
   margin-bottom: 1.15em;
   text-indent: 1.6em;
-  /* KHÔNG justify — tránh "sông" trắng trên mobile; căn trái dễ đọc hơn */
+  /* KHÔNG justify trên mobile — tránh "sông" trắng */
   text-align: left;
 }
 @media (min-width: 768px) {
@@ -232,7 +240,7 @@ img, video, iframe { max-width: 100%; height: auto; }
 ::-webkit-scrollbar-thumb { background: rgb(var(--border-strong)); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted-2)); }
 
-::selection { background-color: rgb(var(--primary) / 0.18); }
+::selection { background-color: rgb(var(--primary) / 0.25); }
 
 /* === SKELETON === */
 .skeleton {
@@ -264,26 +272,51 @@ img, video, iframe { max-width: 100%; height: auto; }
 .site-header { transition: transform 0.28s ease; }
 html.chrome-hidden .site-header { transform: translateY(-100%); }
 
-/* === MOTION: hoạ tiết sinh động === */
-@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes floaty2 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(8deg); } }
-@keyframes twinkle { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.1); } }
-@keyframes wiggle { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
-@keyframes floatX { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
-.anim-float { animation: floaty 4s ease-in-out infinite; }
-.anim-float2 { animation: floaty2 5.5s ease-in-out infinite; }
-.anim-floatx { animation: floatX 6s ease-in-out infinite; }
-.anim-twinkle { animation: twinkle 2.6s ease-in-out infinite; }
-.anim-wiggle { animation: wiggle 3.2s ease-in-out infinite; }
+/* ====================================================================
+   CINEMATIC — chất liệu đặc trưng
+   ==================================================================== */
 
-/* Nền hoạ tiết dấu chân mèo mờ (paw pattern) */
-.paw-pattern {
-  background-image: radial-gradient(rgb(var(--primary) / 0.05) 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
+/* Backdrop từ ảnh bìa: ảnh mờ phủ nền, tan dần vào màu nền trang */
+.backdrop-img {
+  position: absolute;
+  inset: -24px;               /* tràn viền để blur không lộ mép */
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  object-fit: cover;
+  filter: blur(28px) saturate(1.15);
+  transform: scale(1.1);
+  opacity: 0.55;
+}
+.dark .backdrop-img { opacity: 0.55; }
+
+/* Lớp phủ tan vào nền — đặt trên .backdrop-img */
+.backdrop-fade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgb(var(--bg)) 0%, rgb(var(--bg) / 0.72) 34%, rgb(var(--bg) / 0.28) 62%, rgb(var(--bg) / 0.12) 100%),
+    linear-gradient(to right, rgb(var(--bg) / 0.55) 0%, transparent 45%);
 }
 
-/* === CHIỀU SÂU & CHẤT LIỆU === */
-/* Mesh gradient pastel — dùng cho hero / thẻ nổi bật */
+/* Số thứ hạng khổng lồ kiểu "Top 10" — viền amber, ruột trong suốt */
+.rank-outline {
+  font-family: var(--font-lexend), sans-serif;
+  font-weight: 800;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 2.5px rgb(var(--primary) / 0.9);
+  letter-spacing: -0.06em;
+  user-select: none;
+}
+
+/* Ánh sáng ambient tĩnh phía sau nội dung (thay blob pastel cũ — rẻ GPU) */
+.ambient-glow {
+  background:
+    radial-gradient(600px 320px at 18% 0%, rgb(var(--primary) / 0.07), transparent 70%),
+    radial-gradient(560px 300px at 85% 8%, rgb(var(--accent) / 0.06), transparent 70%);
+}
+
+/* Mesh gradient theo token — dùng cho thẻ hoàn thành chương, trang auth */
 .mesh-pastel {
   background:
     radial-gradient(at 12% 15%, rgb(var(--primary-soft)) 0px, transparent 55%),
@@ -292,18 +325,6 @@ html.chrome-hidden .site-header { transform: translateY(-100%); }
     radial-gradient(at 20% 92%, rgb(var(--accent) / 0.16) 0px, transparent 50%),
     rgb(var(--surface));
 }
-
-/* Hạt nhiễu (grain) phủ toàn trang — hết "phẳng lì" */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  pointer-events: none;
-  opacity: 0.045;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
-}
-.dark .grain { opacity: 0.07; mix-blend-mode: overlay; }
 
 /* === SCROLL REVEAL === */
 .reveal { opacity: 0; transform: translateY(18px); }
@@ -315,6 +336,18 @@ html.chrome-hidden .site-header { transform: translateY(-100%); }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; }
 }
+
+/* === MOTION (mascot, trang loading/empty vẫn dùng) === */
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes floaty2 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(8deg); } }
+@keyframes twinkle { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.1); } }
+@keyframes wiggle { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes floatX { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
+.anim-float { animation: floaty 4s ease-in-out infinite; }
+.anim-float2 { animation: floaty2 5.5s ease-in-out infinite; }
+.anim-floatx { animation: floatX 6s ease-in-out infinite; }
+.anim-twinkle { animation: twinkle 2.6s ease-in-out infinite; }
+.anim-wiggle { animation: wiggle 3.2s ease-in-out infinite; }
 
 /* === ĐỌC CAO CẤP === */
 /* Drop cap — chữ cái đầu chương to như sách in */
@@ -333,7 +366,7 @@ html.chrome-hidden .site-header { transform: translateY(-100%); }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-/* === BURST: bung tim/dấu chân khi thả cảm xúc === */
+/* === BURST: bung tim khi thả cảm xúc === */
 @keyframes burst-fly {
   0% { opacity: 1; transform: translate(-50%, -50%) scale(0.4); }
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1); }

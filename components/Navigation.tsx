@@ -73,7 +73,7 @@ export default function Navigation({ genres = [] }: NavigationProps) {
   if (isReading) return null
 
   return (
-    <nav ref={navRef} className="sticky top-14 z-40 bg-surface/90 backdrop-blur-md border-b border-border">
+    <nav ref={navRef} className="sticky top-16 z-40 bg-bg/85 backdrop-blur-xl border-b border-border/60">
       <div className="container">
 
         {/* ===== DESKTOP ===== */}
@@ -114,8 +114,9 @@ export default function Navigation({ genres = [] }: NavigationProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          {[...categories, { name: '🏆 BXH', href: '/bang-xep-hang' }, { name: '📚 Tủ sách', href: '/tu-sach' }].map((c) => (
-            <Link key={c.href} href={c.href} className="px-3 h-8 leading-8 rounded-full bg-surface-2 text-foreground text-[13px] font-medium whitespace-nowrap flex-shrink-0">
+          {/* BXH & Tủ sách đã có ở tab bar dưới — không lặp lại ở đây */}
+          {categories.map((c) => (
+            <Link key={c.href} href={c.href} className="px-3.5 h-9 leading-9 rounded-full bg-surface-2 text-foreground text-sm font-medium whitespace-nowrap flex-shrink-0">
               {c.name}
             </Link>
           ))}

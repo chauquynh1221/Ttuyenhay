@@ -70,19 +70,23 @@ export default async function Home() {
   const truyenFull = truyenFullRaw.map(mapCard)
 
   return (
-    <div className="container py-5 sm:py-7 max-w-[1180px]">
+    <>
+      {/* Hero full-bleed — nằm ngoài container */}
       <HeroCarousel items={heroItems} />
-      <GenreRail genres={genres} />
 
-      <ContinueReading />
+      <div className="container pb-8 sm:pb-12">
+        <ContinueReading />
 
-      <Reveal><FeaturedBento items={bento} /></Reveal>
+        <Reveal><RankingBand items={ranking} /></Reveal>
 
-      <Reveal><BookShelf icon={BookOpen} title="Mới cập nhật" href="/danh-sach/truyen-moi" items={truyenMoi} accent="accent" /></Reveal>
+        <Reveal><FeaturedBento items={bento} /></Reveal>
 
-      <Reveal><RankingBand items={ranking} /></Reveal>
+        <Reveal><GenreRail genres={genres} /></Reveal>
 
-      <Reveal><BookShelf icon={CheckCircle} title="Đã hoàn thành" href="/danh-sach/truyen-full" items={truyenFull} /></Reveal>
-    </div>
+        <Reveal><BookShelf icon={BookOpen} title="Mới cập nhật" href="/danh-sach/truyen-moi" items={truyenMoi} accent="accent" /></Reveal>
+
+        <Reveal><BookShelf icon={CheckCircle} title="Đã hoàn thành" href="/danh-sach/truyen-full" items={truyenFull} /></Reveal>
+      </div>
+    </>
   )
 }

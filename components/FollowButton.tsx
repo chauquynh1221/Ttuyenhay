@@ -40,7 +40,7 @@ export default function FollowButton({ slug, title }: FollowButtonProps) {
             onClick={toggle}
             disabled={loading}
             title={following ? `Bỏ theo dõi ${title}` : `Theo dõi ${title}`}
-            className={`btn btn-default w-full gap-1.5
+            className={`btn btn-default gap-1.5
         ${following
                     ? 'bg-primary-soft text-primary border-primary'
                     : 'hover:text-primary'
