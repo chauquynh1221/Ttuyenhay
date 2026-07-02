@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   description: 'Bongmeow — đọc truyện online miễn phí: truyện hot, tiên hiệp, ngôn tình, kiếm hiệp. Giao diện hiện đại, tối ưu cho điện thoại.',
   keywords: ['bongmeow', 'truyện', 'đọc truyện', 'truyện full', 'tiên hiệp', 'ngôn tình', 'kiếm hiệp'],
-  icons: { icon: '/bongmeow-logo.png', apple: '/bongmeow-logo.png' },
+  icons: { icon: '/bongmeow-cat.png', apple: '/bongmeow-cat.png' },
 }
 
 export const viewport: Viewport = {

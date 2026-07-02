@@ -23,7 +23,7 @@ export default async function Footer() {
           {/* Brand */}
           <div className="md:w-72 flex-shrink-0">
             <div className="flex items-center gap-2 mb-3">
-              <CatLogo className="w-9 h-9" />
+              <CatLogo className="w-10 h-10" />
               <span className="font-display font-extrabold text-lg text-foreground">Bong<span className="text-primary">meow</span></span>
             </div>
             <p className="text-sm leading-relaxed text-muted">

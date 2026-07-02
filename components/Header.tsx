@@ -42,7 +42,7 @@ export default function Header({ genres = [] }: { genres?: Genre[] }) {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Bongmeow">
-            <CatLogo className="w-9 h-9 flex-shrink-0" />
+            <CatLogo className="w-10 h-10 flex-shrink-0" />
             <span className="font-display font-extrabold text-xl tracking-tight text-header-foreground leading-none whitespace-nowrap">
               Bong<span className="text-primary">meow</span>
             </span>
