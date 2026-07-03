@@ -15,7 +15,12 @@ export default function AdminEditChapterPage({ params }: { params: Promise<{ slu
     const [error, setError] = useState('')
 
     useEffect(() => {
-        if (!chapterId) return
+        // Thiếu ?id → không thể tải chương, dừng loading và báo lỗi thay vì kẹt mãi
+        if (!chapterId) {
+            setError('Thiếu ID chương. Hãy mở trang này từ danh sách chương.')
+            setLoading(false)
+            return
+        }
         fetch(`/api/admin/chapters/${chapterId}`).then(r => r.json()).then(d => {
             if (d.success) {
                 setForm({
@@ -23,9 +28,11 @@ export default function AdminEditChapterPage({ params }: { params: Promise<{ slu
                     content: d.chapter.content || '',
                     chapterNumber: d.chapter.chapterNumber,
                 })
+            } else {
+                setError(d.error || 'Không tải được chương')
             }
             setLoading(false)
-        })
+        }).catch(() => { setError('Không tải được chương'); setLoading(false) })
     }, [chapterId])
 
     const handleSubmit = async (e: React.FormEvent) => {

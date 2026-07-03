@@ -35,35 +35,19 @@ async function getChapterData(slug: string, chapterNumber: number): Promise<Chap
       return null
     }
 
-    // Find chapter
-    const chapter = await Chapter.findOne({
-      truyenId: truyen._id,
-      chapterNumber: chapterNumber,
-    }).lean() as any
+    // Gộp 4 truy vấn còn lại chạy song song (thay vì tuần tự)
+    const [chapter, prevChapter, nextChapter, totalChapters] = await Promise.all([
+      Chapter.findOne({ truyenId: truyen._id, chapterNumber }).lean() as any,
+      Chapter.findOne({ truyenId: truyen._id, chapterNumber: { $lt: chapterNumber } })
+        .sort({ chapterNumber: -1 }).select('chapterNumber').lean() as any,
+      Chapter.findOne({ truyenId: truyen._id, chapterNumber: { $gt: chapterNumber } })
+        .sort({ chapterNumber: 1 }).select('chapterNumber').lean() as any,
+      Chapter.countDocuments({ truyenId: truyen._id }),
+    ])
 
     if (!chapter) {
       return null
     }
-
-    // Find prev and next chapters
-    const prevChapter = await Chapter.findOne({
-      truyenId: truyen._id,
-      chapterNumber: { $lt: chapterNumber },
-    })
-      .sort({ chapterNumber: -1 })
-      .select('chapterNumber')
-      .lean() as any
-
-    const nextChapter = await Chapter.findOne({
-      truyenId: truyen._id,
-      chapterNumber: { $gt: chapterNumber },
-    })
-      .sort({ chapterNumber: 1 })
-      .select('chapterNumber')
-      .lean() as any
-
-    // Get total chapters
-    const totalChapters = await Chapter.countDocuments({ truyenId: truyen._id })
 
     // Format response
     return {

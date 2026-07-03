@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import ImageUploadField from '@/components/ImageUploadField'
 
 export default function AdminNewTruyenPage() {
     const router = useRouter()
@@ -84,12 +85,7 @@ export default function AdminNewTruyenPage() {
                             placeholder="Thiên Tàm Thổ Đậu"
                             className="form-control" />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-foreground/90 mb-1">Ảnh bìa (URL)</label>
-                        <input value={form.coverImage} onChange={e => setForm({ ...form, coverImage: e.target.value })}
-                            placeholder="https://..."
-                            className="form-control" />
-                    </div>
+                    <ImageUploadField value={form.coverImage} onChange={(url) => setForm({ ...form, coverImage: url })} />
                 </div>
 
                 <div>

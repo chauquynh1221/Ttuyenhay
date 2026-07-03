@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useToast } from '@/components/Toast'
 
 interface UserItem {
     _id: string
@@ -9,12 +10,15 @@ interface UserItem {
     role: string
     googleId?: string
     avatar?: string
+    isBanned?: boolean
     createdAt: string
 }
 
 export default function AdminUsersPage() {
+    const toast = useToast()
     const [users, setUsers] = useState<UserItem[]>([])
     const [loading, setLoading] = useState(true)
+    const [busy, setBusy] = useState<string | null>(null)
     const [search, setSearch] = useState('')
     const [page, setPage] = useState(1)
     const [total, setTotal] = useState(0)
@@ -36,20 +40,31 @@ export default function AdminUsersPage() {
 
     useEffect(() => { fetchData() }, [fetchData])
 
-    const handleRoleChange = async (userId: string, newRole: string) => {
-        if (!confirm(`Đổi role thành "${newRole}"?`)) return
-        await fetch('/api/admin/users', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: userId, role: newRole }),
-        })
-        fetchData()
+    const call = async (method: string, body: any, okMsg: string) => {
+        setBusy(body.id)
+        const r = await fetch('/api/admin/users', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        const d = await r.json().catch(() => ({}))
+        setBusy(null)
+        if (r.ok) { toast(okMsg); fetchData() }
+        else toast(d.error || 'Thao tác thất bại', 'error')
+    }
+
+    const handleRoleChange = (userId: string, newRole: string) => {
+        if (!confirm(`Đổi quyền thành "${newRole}"?`)) return
+        call('PUT', { id: userId, role: newRole }, 'Đã đổi quyền')
+    }
+    const handleBan = (u: UserItem) => {
+        if (!confirm(u.isBanned ? `Mở khóa ${u.name}?` : `Khóa tài khoản ${u.name}?`)) return
+        call('PATCH', { id: u._id, isBanned: !u.isBanned }, u.isBanned ? 'Đã mở khóa' : 'Đã khóa')
+    }
+    const handleDelete = (u: UserItem) => {
+        if (!confirm(`Xóa vĩnh viễn tài khoản ${u.name}? Không thể hoàn tác.`)) return
+        call('DELETE', { id: u._id }, 'Đã xóa')
     }
 
     const ROLE_COLORS: Record<string, string> = {
-        admin: 'bg-red-100 text-red-700',
-        vip: 'bg-yellow-100 text-yellow-700',
-        user: 'bg-gray-100 text-gray-600',
+        admin: 'bg-primary-soft text-primary',
+        user: 'bg-surface-2 text-muted',
     }
 
     return (
@@ -63,7 +78,7 @@ export default function AdminUsersPage() {
                     className="form-control w-full max-w-sm" />
             </div>
 
-            <div className="card overflow-hidden">
+            <div className="card overflow-x-auto">
                 {loading ? (
                     <div className="p-8 text-center text-muted-2 text-sm">Đang tải...</div>
                 ) : (
@@ -74,47 +89,44 @@ export default function AdminUsersPage() {
                                     <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">User</th>
                                     <th className="text-left px-4 py-3 text-xs text-muted font-semibold uppercase">Email</th>
                                     <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Login</th>
-                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Role</th>
-                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Ngày ĐK</th>
-                                    <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Đổi role</th>
+                                    <th className="text-center px-4 py-3 text-xs text-muted font-semibold uppercase">Quyền</th>
+                                    <th className="text-right px-4 py-3 text-xs text-muted font-semibold uppercase">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {users.map(u => (
-                                    <tr key={u._id} className="hover:bg-surface-2">
+                                    <tr key={u._id} className={`hover:bg-surface-2 ${u.isBanned ? 'opacity-60' : ''}`}>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
                                                 {u.avatar ? (
-                                                    <img src={u.avatar} alt="" className="w-7 h-7 rounded-full" />
+                                                    <img src={u.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
                                                 ) : (
                                                     <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-fg text-xs font-bold">
                                                         {u.name[0]?.toUpperCase()}
                                                     </div>
                                                 )}
                                                 <span className="font-medium text-foreground">{u.name}</span>
+                                                {u.isBanned && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-500">Đã khóa</span>}
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-muted text-xs">{u.email}</td>
                                         <td className="px-4 py-3 text-center">
-                                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${u.googleId ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500'}`}>
+                                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-2 text-muted">
                                                 {u.googleId ? '🔵 Google' : '📧 Email'}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-center">
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${ROLE_COLORS[u.role] || 'bg-gray-100'}`}>
-                                                {u.role}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-center text-muted text-xs">
-                                            {new Date(u.createdAt).toLocaleDateString('vi-VN')}
-                                        </td>
-                                        <td className="px-4 py-3 text-right">
-                                            <select value={u.role} onChange={e => handleRoleChange(u._id, e.target.value)}
-                                                className="form-control h-auto w-auto py-1 text-xs">
+                                            <select value={u.role} disabled={busy === u._id} onChange={e => handleRoleChange(u._id, e.target.value)}
+                                                className={`rounded-full text-xs font-semibold px-2 py-1 border border-border ${ROLE_COLORS[u.role] || ''}`}>
                                                 <option value="user">user</option>
-                                                <option value="vip">vip</option>
                                                 <option value="admin">admin</option>
                                             </select>
+                                        </td>
+                                        <td className="px-4 py-3 text-right whitespace-nowrap">
+                                            <button disabled={busy === u._id} onClick={() => handleBan(u)} className="text-xs text-[rgb(var(--warning))] hover:underline mr-3 disabled:opacity-50">
+                                                {u.isBanned ? 'Mở khóa' : 'Khóa'}
+                                            </button>
+                                            <button disabled={busy === u._id} onClick={() => handleDelete(u)} className="text-xs text-red-500 hover:underline disabled:opacity-50">Xóa</button>
                                         </td>
                                     </tr>
                                 ))}

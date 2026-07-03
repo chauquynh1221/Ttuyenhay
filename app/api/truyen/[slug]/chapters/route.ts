@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Chapter from '@/models/Chapter'
+import { requireAdmin } from '@/lib/auth'
+import { clampLimit, parsePage } from '@/lib/apiHelpers'
 
 // GET /api/truyen/[slug]/chapters - Get all chapters of a truyen
 export async function GET(
@@ -13,8 +15,8 @@ export async function GET(
     const { slug } = await params
 
     const searchParams = request.nextUrl.searchParams
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '50')
+    const page = parsePage(searchParams.get('page'))
+    const limit = clampLimit(searchParams.get('limit'), 50, 200)
 
     const truyen = await Truyen.findOne({ slug }).select('_id').lean() as any
 
@@ -61,6 +63,7 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    await requireAdmin()
     await dbConnect()
     const { slug } = await params
     const body = await request.json()
@@ -79,16 +82,18 @@ export async function POST(
       truyenId: truyen._id,
     })
 
-    // Update totalChapters
-    await Truyen.findByIdAndUpdate(truyen._id, {
-      $inc: { totalChapters: 1 },
-    })
+    // Đồng bộ totalChapters theo số đếm thực (tránh lệch khi có nhiều đường ghi)
+    const totalChapters = await Chapter.countDocuments({ truyenId: truyen._id })
+    await Truyen.findByIdAndUpdate(truyen._id, { totalChapters })
 
     return NextResponse.json({
       success: true,
       data: chapter,
     }, { status: 201 })
   } catch (error: any) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 400 }

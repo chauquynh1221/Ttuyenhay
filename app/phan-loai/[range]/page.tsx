@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar'
 import { notFound } from 'next/navigation'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
+import { getSidebarData } from '@/lib/sidebarData'
 
 export const revalidate = 600
 
@@ -57,8 +58,8 @@ export default async function PhanLoaiPage({ params, searchParams }: PageProps) 
     isHot: t.isHot, isFull: t.isFull, isNew: t.isNew, coverImage: t.coverImage, totalChapters: t.totalChapters,
     latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` }, updatedAt: timeAgo(t.updatedAt),
   }))
-  const topAllTime = (topRaw as any[]).map((t) => ({ id: t._id.toString(), title: t.title, slug: t.slug, views: t.views, rating: t.rating }))
   const totalPages = Math.ceil(total / PER_PAGE)
+  const sidebar = await getSidebarData()
 
   return (
     <div className="container py-4 sm:py-6">
@@ -84,7 +85,7 @@ export default async function PhanLoaiPage({ params, searchParams }: PageProps) 
         </div>
 
         <aside className="w-full lg:w-[320px] flex-shrink-0">
-          <Sidebar topDaily={topAllTime} topMonthly={topAllTime} topAllTime={topAllTime} />
+          <Sidebar {...sidebar} />
         </aside>
       </div>
     </div>

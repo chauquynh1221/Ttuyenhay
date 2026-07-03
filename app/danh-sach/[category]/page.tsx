@@ -3,6 +3,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Pagination from '@/components/Pagination'
 import Sidebar from '@/components/Sidebar'
 import SortDropdown from './SortDropdown'
+import { getSidebarData } from '@/lib/sidebarData'
 
 interface PageProps {
   params: Promise<{ category: string }>
@@ -111,6 +112,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   }))
 
   const totalPages = truyenData.pagination.pages
+  const sidebar = await getSidebarData()
 
   return (
     <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
@@ -147,11 +149,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
         {/* Sidebar - FIX: Truyền data thực cho sidebar trang danh sách */}
         <div className="lg:w-[300px] xl:w-[320px] flex-shrink-0">
-          <Sidebar
-            topDaily={topAllTime}
-            topMonthly={topAllTime}
-            topAllTime={topAllTime}
-          />
+          <Sidebar {...sidebar} />
         </div>
       </div>
     </div>

@@ -39,6 +39,7 @@ interface CommentItemProps {
 function CommentItem({ comment, isReply = false, currentUserId, onLike, onDelete, onReply, activeReplyId }: CommentItemProps) {
     const isOwner = currentUserId && currentUserId === comment.userId
     const isActive = activeReplyId === comment._id
+    const liked = !!currentUserId && (comment.likedBy || []).includes(currentUserId)
 
     return (
         <div className={isReply ? 'flex gap-2' : 'flex gap-3 group'}>
@@ -54,13 +55,13 @@ function CommentItem({ comment, isReply = false, currentUserId, onLike, onDelete
                 <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line break-words">{comment.content}</p>
                 <div className="flex items-center gap-3 mt-1.5">
                     <button onClick={() => onLike(comment._id)}
-                        className="flex items-center gap-1 text-xs text-muted-2 hover:text-primary transition-colors">
-                        <svg style={{ width: 13, height: 13 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        className={`flex items-center gap-1 text-xs transition-colors ${liked ? 'text-primary font-semibold' : 'text-muted-2 hover:text-primary'}`}>
+                        <svg style={{ width: 13, height: 13 }} fill={liked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                 d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                         </svg>
                         {comment.likes > 0 && <span>{comment.likes}</span>}
-                        <span>Thích</span>
+                        <span>{liked ? 'Đã thích' : 'Thích'}</span>
                     </button>
 
                     {!isReply && onReply && (
@@ -280,7 +281,13 @@ export default function CommentSection({ truyenId, chapterId }: CommentSectionPr
         const res = await fetch(`/api/comments/${commentId}`, { method: 'POST' })
         const data = await res.json()
         if (data.success) {
-            const updateLike = (c: Comment) => c._id === commentId ? { ...c, likes: data.likes } : c
+            const updateLike = (c: Comment): Comment => {
+                if (c._id !== commentId) return c
+                const likedBy = data.liked
+                    ? [...(c.likedBy || []), currentUserId!]
+                    : (c.likedBy || []).filter(uid => uid !== currentUserId)
+                return { ...c, likes: data.likes, likedBy }
+            }
             setComments(prev => prev.map(c => ({
                 ...updateLike(c),
                 replies: (c.replies || []).map(updateLike),

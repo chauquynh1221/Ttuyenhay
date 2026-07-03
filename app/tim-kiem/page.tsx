@@ -5,6 +5,7 @@ import Pagination from '@/components/Pagination'
 import Sidebar from '@/components/Sidebar'
 import ViewToggle from './ViewToggle'
 import EmptyState from '@/components/EmptyState'
+import { getSidebarData } from '@/lib/sidebarData'
 
 const GENRES = [
   'Tiên Hiệp', 'Kiếm Hiệp', 'Ngôn Tình', 'Đô Thị', 'Huyền Huyễn',
@@ -37,6 +38,7 @@ function formatTimeAgo(date: Date): string {
 export default async function SearchPage({ searchParams }: PageProps) {
   const { q = '', page = '1', view = 'grid', genre = '', status = '', sort = 'views' } = await searchParams
   const currentPage = parseInt(page)
+  const sidebar = await getSidebarData()
 
   let results: any[] = []
   let totalPages = 0
@@ -101,6 +103,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
               <input type="hidden" name="genre" value={genre} />
               <input type="hidden" name="status" value={status} />
               <input type="hidden" name="sort" value={sort} />
+              <input type="hidden" name="view" value={view} />
               <input
                 type="search"
                 name="q"
@@ -174,7 +177,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
                   {' '}
                   {results.length > 0 && <span className="text-muted-2">({totalResults} kết quả)</span>}
                 </div>
-                <ViewToggle currentView={view} query={q} />
+                <ViewToggle currentView={view} query={q} genre={genre} status={status} sort={sort} />
               </div>
 
               {results.length > 0 ? (
@@ -211,7 +214,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
 
         {/* Sidebar */}
         <div className="lg:w-[27%]">
-          <Sidebar />
+          <Sidebar {...sidebar} />
         </div>
       </div>
     </div>

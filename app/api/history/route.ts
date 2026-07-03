@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import User from '@/models/User'
+import Chapter from '@/models/Chapter'
 import { getCurrentUser } from '@/lib/auth'
 import mongoose from 'mongoose'
 
@@ -40,6 +41,10 @@ export async function POST(req: NextRequest) {
     const truyenObjId = new mongoose.Types.ObjectId(truyenId)
     const chapterObjId = new mongoose.Types.ObjectId(chapterId)
 
+    // Lấy số chương để cập nhật tiến độ tủ sách + đếm view chương
+    const chapter = await Chapter.findById(chapterObjId).select('chapterNumber').lean() as any
+    const chapterNumber = chapter?.chapterNumber
+
         // Xóa entry cũ cùng truyện (để đẩy lên đầu)
         ; (user as any).readingHistory = (user as any).readingHistory.filter(
             (h: any) => h.truyenId.toString() !== truyenId
@@ -52,7 +57,17 @@ export async function POST(req: NextRequest) {
             readAt: new Date(),
         })
 
+    // Cập nhật tiến độ trong tủ sách (nếu truyện đang được yêu thích)
+    if (chapterNumber) {
+        const bm = (user as any).bookmarks?.find((b: any) => b.truyenId.toString() === truyenId)
+        if (bm) bm.currentChapter = chapterNumber
+    }
+
     await user.save()
+
+    // Đếm view chương (best-effort)
+    Chapter.findByIdAndUpdate(chapterObjId, { $inc: { views: 1 } }).catch(() => { })
+
     return NextResponse.json({ success: true })
 }
 

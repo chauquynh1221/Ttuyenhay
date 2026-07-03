@@ -108,6 +108,18 @@ export default function ChapterContent({ chapter }: { chapter: ChapterData }) {
     }).catch(() => { })
   }, [chapter.id, chapter.truyenId])
 
+  // Đánh dấu chương đã đọc trong localStorage (để hiện ở danh sách chương)
+  useEffect(() => {
+    try {
+      const key = `bm-read:${chapter.truyenSlug}`
+      const set = new Set<number>(JSON.parse(localStorage.getItem(key) || '[]'))
+      set.add(chapter.chapterNumber)
+      // giữ tối đa 2000 mục gần nhất
+      const arr = [...set].slice(-2000)
+      localStorage.setItem(key, JSON.stringify(arr))
+    } catch { }
+  }, [chapter.truyenSlug, chapter.chapterNumber])
+
   // Keyboard ← →
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

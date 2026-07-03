@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
+import ImageUploadField from '@/components/ImageUploadField'
 
 export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
@@ -18,20 +19,22 @@ export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug
     useEffect(() => {
         Promise.all([
             fetch('/api/admin/genres').then(r => r.json()),
-            fetch(`/api/admin/truyen?q=${slug}&limit=1`).then(r => r.json()),
+            fetch(`/api/admin/truyen/${slug}`).then(r => r.json()),
         ]).then(([gd, td]) => {
             if (gd.success) setGenres(gd.genres)
-            if (td.success && td.data.length > 0) {
-                const t = td.data.find((x: any) => x.slug === slug) || td.data[0]
+            if (td.success && td.truyen) {
+                const t = td.truyen
                 setForm({
                     id: t._id, title: t.title, slug: t.slug, author: t.author,
                     description: t.description, coverImage: t.coverImage || '',
                     genres: t.genres || [], status: t.status,
                     isHot: t.isHot, isFull: t.isFull, isNew: t.isNew,
                 })
+            } else {
+                setError('Không tìm thấy truyện')
             }
             setLoading(false)
-        })
+        }).catch(() => setLoading(false))
     }, [slug])
 
     const toggleGenre = (name: string) => {
@@ -86,11 +89,7 @@ export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug
                         <input value={form.author} onChange={e => setForm({ ...form, author: e.target.value })}
                             className="form-control" />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-foreground/90 mb-1">Ảnh bìa (URL)</label>
-                        <input value={form.coverImage} onChange={e => setForm({ ...form, coverImage: e.target.value })}
-                            className="form-control" />
-                    </div>
+                    <ImageUploadField value={form.coverImage} onChange={(url) => setForm({ ...form, coverImage: url })} />
                 </div>
 
                 <div>

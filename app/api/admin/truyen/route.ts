@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Chapter from '@/models/Chapter'
-import { getCurrentUser } from '@/lib/auth'
-
-async function requireAdmin() {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'admin') throw new Error('Unauthorized')
-    return user
-}
+import { requireAdmin } from '@/lib/auth'
+import { escapeRegex } from '@/lib/apiHelpers'
 
 // GET — danh sách truyện (search, filter, pagination)
 export async function GET(req: NextRequest) {
@@ -26,10 +21,11 @@ export async function GET(req: NextRequest) {
 
         const filter: any = {}
         if (q.trim()) {
+            const rx = escapeRegex(q.trim())
             filter.$or = [
-                { title: { $regex: q.trim(), $options: 'i' } },
-                { author: { $regex: q.trim(), $options: 'i' } },
-                { slug: { $regex: q.trim(), $options: 'i' } },
+                { title: { $regex: rx, $options: 'i' } },
+                { author: { $regex: rx, $options: 'i' } },
+                { slug: { $regex: rx, $options: 'i' } },
             ]
         }
         if (genre) filter.genres = genre

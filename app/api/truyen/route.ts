@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
+import { requireAdmin } from '@/lib/auth'
+import { clampLimit, parsePage } from '@/lib/apiHelpers'
 
 // GET /api/truyen - Get list of truyen with filters and pagination
 export async function GET(request: NextRequest) {
@@ -8,8 +10,8 @@ export async function GET(request: NextRequest) {
     await dbConnect()
 
     const searchParams = request.nextUrl.searchParams
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const page = parsePage(searchParams.get('page'))
+    const limit = clampLimit(searchParams.get('limit'))
     const genre = searchParams.get('genre')
     const status = searchParams.get('status')
     const isHot = searchParams.get('isHot')
@@ -67,6 +69,7 @@ export async function GET(request: NextRequest) {
 // POST /api/truyen - Create new truyen (admin only)
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin()
     await dbConnect()
 
     const body = await request.json()
@@ -77,6 +80,9 @@ export async function POST(request: NextRequest) {
       data: truyen,
     }, { status: 201 })
   } catch (error: any) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 400 }

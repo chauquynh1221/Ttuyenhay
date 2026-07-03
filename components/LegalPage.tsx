@@ -1,6 +1,9 @@
 import Breadcrumb from '@/components/Breadcrumb'
 
-export default function LegalPage({ title, sections }: { title: string; sections: { heading: string; body: string }[] }) {
+// Mốc cập nhật cố định (không dùng new Date() động — tránh luôn hiện "hôm nay")
+const LAST_UPDATED = '01/07/2026'
+
+export default function LegalPage({ title, sections, updatedAt = LAST_UPDATED }: { title: string; sections: { heading: string; body: string }[]; updatedAt?: string }) {
   return (
     <div className="container py-6 max-w-3xl">
       <Breadcrumb items={[{ label: title }]} />
@@ -15,7 +18,7 @@ export default function LegalPage({ title, sections }: { title: string; sections
           ))}
         </div>
         <p className="text-xs text-muted-2 mt-8 pt-4 border-t border-border">
-          Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN')}
+          Cập nhật lần cuối: {updatedAt}
         </p>
       </article>
     </div>

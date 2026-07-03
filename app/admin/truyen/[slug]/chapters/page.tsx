@@ -19,10 +19,10 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
 
     const fetchData = useCallback(async () => {
         setLoading(true)
-        // Lấy thông tin truyện
-        const tr = await fetch(`/api/admin/truyen?q=${slug}&limit=1`).then(r => r.json())
-        if (tr.success && tr.data.length > 0) {
-            const t = tr.data.find((x: any) => x.slug === slug) || tr.data[0]
+        // Lấy thông tin truyện theo slug (chính xác, không phải "hack" search)
+        const tr = await fetch(`/api/admin/truyen/${slug}`).then(r => r.json())
+        if (tr.success && tr.truyen) {
+            const t = tr.truyen
             setTruyen(t)
 
             // Lấy chương
@@ -30,9 +30,8 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
             if (cr.success) {
                 setChapters(cr.chapters)
                 setTotalPages(cr.pagination.totalPages)
-                // Auto-set next chapter number
-                const maxCh = cr.chapters.length > 0 ? Math.max(...cr.chapters.map((c: any) => c.chapterNumber)) : 0
-                setChForm(prev => ({ ...prev, chapterNumber: maxCh + 1 }))
+                // Gợi ý số chương kế tiếp dựa trên tổng số chương thực (đúng kể cả >50 chương)
+                setChForm(prev => ({ ...prev, chapterNumber: (t.totalChapters || 0) + 1 }))
             }
         }
         setLoading(false)

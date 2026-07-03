@@ -121,6 +121,7 @@ export default function AdminCommentsPage() {
                                         <td className="px-4 py-3">
                                             <span className="font-medium text-foreground text-xs">{c.userName}</span>
                                             {!c.userId && <span className="ml-1 text-[10px] bg-surface-3 text-muted px-1 rounded">Khách</span>}
+                                            {c.isReply && <span className="ml-1 text-[10px] bg-accent-soft text-accent px-1 rounded">↳ Trả lời</span>}
                                         </td>
                                         <td className="px-4 py-3 text-foreground/90 text-xs max-w-[300px] truncate">{c.content}</td>
                                         <td className="px-4 py-3">

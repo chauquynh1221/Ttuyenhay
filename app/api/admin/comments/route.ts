@@ -2,28 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Comment from '@/models/Comment'
 import Truyen from '@/models/Truyen'
-import { getCurrentUser } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
+import { escapeRegex, clampLimit, parsePage } from '@/lib/apiHelpers'
 
-async function requireAdmin() {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'admin') throw new Error('Unauthorized')
-    return user
-}
-
-// GET — danh sách comments (admin)
+// GET — danh sách comments (admin) — bao gồm CẢ reply để kiểm duyệt
 export async function GET(req: NextRequest) {
     try {
         await requireAdmin()
         await dbConnect()
         const q = req.nextUrl.searchParams.get('q') || ''
-        const page = parseInt(req.nextUrl.searchParams.get('page') || '1')
-        const limit = parseInt(req.nextUrl.searchParams.get('limit') || '20')
+        const page = parsePage(req.nextUrl.searchParams.get('page'))
+        const limit = clampLimit(req.nextUrl.searchParams.get('limit'))
 
-        const filter: any = { parentId: null }
+        const filter: any = {}
         if (q.trim()) {
+            const rx = escapeRegex(q.trim())
             filter.$or = [
-                { content: { $regex: q.trim(), $options: 'i' } },
-                { userName: { $regex: q.trim(), $options: 'i' } },
+                { content: { $regex: rx, $options: 'i' } },
+                { userName: { $regex: rx, $options: 'i' } },
             ]
         }
 
@@ -51,6 +47,7 @@ export async function GET(req: NextRequest) {
                 return {
                     ...c,
                     _id: c._id.toString(),
+                    isReply: !!c.parentId,
                     truyenTitle: t?.title || '',
                     truyenSlug: t?.slug || '',
                 }

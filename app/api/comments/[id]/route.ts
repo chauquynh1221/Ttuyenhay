@@ -29,6 +29,10 @@ export async function DELETE(
         }
 
         await comment.deleteOne()
+        // Xóa comment gốc → xóa luôn các reply con (tránh reply mồ côi)
+        if (!comment.parentId) {
+            await Comment.deleteMany({ parentId: comment._id })
+        }
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('DELETE comment error:', error)

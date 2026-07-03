@@ -1,21 +1,24 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useToast } from '@/components/Toast'
 
+// Khớp enum trong models/ChapterReport.ts
 const REPORT_TYPES: Record<string, string> = {
-    wrong_content: 'Nội dung sai',
-    missing_content: 'Thiếu nội dung',
-    duplicate: 'Chương trùng',
-    wrong_order: 'Sai thứ tự',
-    other: 'Khác',
+    thieu_noi_dung: 'Thiếu nội dung',
+    sai_noi_dung: 'Nội dung sai',
+    loi_font: 'Lỗi font',
+    khac: 'Khác',
 }
 
 export default function AdminReportsPage() {
     const [reports, setReports] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [busy, setBusy] = useState<string | null>(null)
     const [statusFilter, setStatusFilter] = useState('pending')
     const [page, setPage] = useState(1)
     const [total, setTotal] = useState(0)
+    const toast = useToast()
 
     const fetchData = useCallback(async () => {
         setLoading(true)
@@ -30,29 +33,35 @@ export default function AdminReportsPage() {
 
     useEffect(() => { fetchData() }, [fetchData])
 
-    const handleResolve = async (id: string) => {
-        await fetch('/api/admin/reports', {
+    const handleResolve = async (id: string, resolved: boolean) => {
+        setBusy(id)
+        const r = await fetch('/api/admin/reports', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, status: 'resolved' }),
+            body: JSON.stringify({ id, resolved }),
         })
-        fetchData()
+        setBusy(null)
+        if (r.ok) { toast(resolved ? 'Đã đánh dấu xử lý' : 'Đã mở lại'); fetchData() }
+        else toast('Thao tác thất bại', 'error')
     }
 
     const handleDelete = async (id: string) => {
         if (!confirm('Xóa báo lỗi này?')) return
-        await fetch('/api/admin/reports', {
+        setBusy(id)
+        const r = await fetch('/api/admin/reports', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id }),
         })
-        fetchData()
+        setBusy(null)
+        if (r.ok) { toast('Đã xóa'); fetchData() }
+        else toast('Xóa thất bại', 'error')
     }
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-5xl">
             <h1 className="text-2xl font-bold text-foreground mb-1">🚨 Báo lỗi chương</h1>
-            <p className="text-sm text-muted mb-6">{total} báo lỗi {statusFilter === 'pending' ? 'chờ xử lý' : ''}</p>
+            <p className="text-sm text-muted mb-6">{total} báo lỗi {statusFilter === 'pending' ? 'chờ xử lý' : statusFilter === 'resolved' ? 'đã xử lý' : ''}</p>
 
             <div className="flex gap-2 mb-4">
                 {['pending', 'resolved', ''].map(s => (
@@ -64,7 +73,7 @@ export default function AdminReportsPage() {
                 ))}
             </div>
 
-            <div className="card overflow-hidden">
+            <div className="card overflow-x-auto">
                 {loading ? (
                     <div className="p-8 text-center text-muted-2 text-sm">Đang tải...</div>
                 ) : (
@@ -82,18 +91,24 @@ export default function AdminReportsPage() {
                         <tbody className="divide-y divide-border">
                             {reports.map(r => (
                                 <tr key={r._id} className="hover:bg-surface-2">
-                                    <td className="px-4 py-3 font-medium text-foreground">{r.truyenId?.title || '—'}</td>
-                                    <td className="px-4 py-3 text-center text-muted">{r.chapterNumber || '—'}</td>
-                                    <td className="px-4 py-3">
-                                        <span className="px-2 py-0.5 bg-orange-50 text-orange-700 rounded text-xs">{REPORT_TYPES[r.reportType] || r.reportType}</span>
+                                    <td className="px-4 py-3 font-medium text-foreground">
+                                        <a href={`/truyen/${r.truyenSlug}`} target="_blank" className="hover:text-primary">{r.truyenTitle || r.truyenSlug || '—'}</a>
                                     </td>
-                                    <td className="px-4 py-3 text-foreground/90 text-xs max-w-[200px] truncate">{r.description || '—'}</td>
-                                    <td className="px-4 py-3 text-center text-muted text-xs">{new Date(r.createdAt).toLocaleDateString('vi-VN')}</td>
+                                    <td className="px-4 py-3 text-center text-muted">
+                                        {r.chapterNumber ? <a href={`/truyen/${r.truyenSlug}/${r.chapterNumber}`} target="_blank" className="hover:text-primary">{r.chapterNumber}</a> : '—'}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <span className="px-2 py-0.5 bg-primary-soft text-primary rounded text-xs whitespace-nowrap">{REPORT_TYPES[r.type] || r.type}</span>
+                                    </td>
+                                    <td className="px-4 py-3 text-foreground/90 text-xs max-w-[240px] truncate" title={r.message}>{r.message || '—'}</td>
+                                    <td className="px-4 py-3 text-center text-muted text-xs whitespace-nowrap">{new Date(r.createdAt).toLocaleDateString('vi-VN')}</td>
                                     <td className="px-4 py-3 text-right whitespace-nowrap">
-                                        {r.status !== 'resolved' && (
-                                            <button onClick={() => handleResolve(r._id)} className="text-xs text-green-600 hover:underline mr-2">✅ Xong</button>
+                                        {r.resolved ? (
+                                            <button disabled={busy === r._id} onClick={() => handleResolve(r._id, false)} className="text-xs text-muted hover:underline mr-3 disabled:opacity-50">↩ Mở lại</button>
+                                        ) : (
+                                            <button disabled={busy === r._id} onClick={() => handleResolve(r._id, true)} className="text-xs text-[rgb(var(--success))] hover:underline mr-3 disabled:opacity-50">✅ Xong</button>
                                         )}
-                                        <button onClick={() => handleDelete(r._id)} className="text-xs text-red-500 hover:underline">Xóa</button>
+                                        <button disabled={busy === r._id} onClick={() => handleDelete(r._id)} className="text-xs text-red-500 hover:underline disabled:opacity-50">Xóa</button>
                                     </td>
                                 </tr>
                             ))}

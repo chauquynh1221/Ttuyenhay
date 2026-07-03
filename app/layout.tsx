@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import ToastProvider from '@/components/Toast'
 import MobileTabBar from '@/components/MobileTabBar'
 import AntiDevtools from '@/components/AntiDevtools'
+import PWARegister from '@/components/PWARegister'
 import dbConnect from '@/lib/mongodb'
 import GenreModel from '@/models/Genre'
 
@@ -82,6 +83,7 @@ export default async function RootLayout({
       <body className="min-h-screen bg-bg ambient-glow text-foreground antialiased">
         <ToastProvider>
           <AntiDevtools />
+          <PWARegister />
           <Header genres={genres} />
           <NavigationWrapper />
           <main className="min-h-[60vh]">

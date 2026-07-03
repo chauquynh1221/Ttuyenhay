@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import TruyenCard from './TruyenCard'
+import { slugify } from '@/lib/slugify'
 
 interface ITruyen {
     id: string
@@ -62,7 +63,7 @@ export default async function RelatedTruyen({ currentSlug, genres }: RelatedTruy
                 </h2>
                 {genres[0] && (
                     <Link
-                        href={`/the-loai/${encodeURIComponent(genres[0])}`}
+                        href={`/the-loai/${slugify(genres[0])}`}
                         className="text-xs text-primary hover:underline"
                     >
                         Xem thêm {genres[0]} →

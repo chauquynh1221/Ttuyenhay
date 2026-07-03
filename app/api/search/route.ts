@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
+import { escapeRegex, clampLimit, parsePage } from '@/lib/apiHelpers'
 
 // GET /api/search - Search truyen với bộ lọc nâng cao
 export async function GET(request: NextRequest) {
@@ -12,8 +13,8 @@ export async function GET(request: NextRequest) {
     const genre = searchParams.get('genre') || ''
     const status = searchParams.get('status') || ''
     const sort = searchParams.get('sort') || 'relevance'
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const page = parsePage(searchParams.get('page'))
+    const limit = clampLimit(searchParams.get('limit'))
     const skip = (page - 1) * limit
 
     // Build query
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')  // bỏ dấu
         .replace(/đ/gi, 'd')
-      const patterns = [...new Set([normalized, q.trim()])]
+      const patterns = [...new Set([normalized, q.trim()])].map(escapeRegex)
       filter.$or = patterns.flatMap((p: string) => [
         { title: { $regex: p, $options: 'i' } },
         { author: { $regex: p, $options: 'i' } },

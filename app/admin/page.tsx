@@ -52,9 +52,12 @@ export default function AdminDashboard() {
 
     const adminLinks = [
         { href: '/admin/truyen', label: '📚 Quản lý truyện', desc: 'Thêm, sửa, xóa truyện' },
-        { href: '/admin/truyen/new', label: '➕ Thêm truyện mới', desc: 'Import truyện vào hệ thống' },
-        { href: '/admin/users', label: '👥 Quản lý người dùng', desc: 'Xem và phân quyền user' },
+        { href: '/admin/truyen/new', label: '➕ Thêm truyện mới', desc: 'Tạo truyện trong hệ thống' },
+        { href: '/admin/the-loai', label: '🏷️ Quản lý thể loại', desc: 'Thêm, sửa, xóa thể loại' },
+        { href: '/admin/users', label: '👥 Quản lý người dùng', desc: 'Phân quyền, khóa, xóa user' },
         { href: '/admin/comments', label: '💬 Kiểm duyệt bình luận', desc: 'Xóa comment vi phạm' },
+        { href: '/admin/reports', label: '🚨 Báo lỗi chương', desc: 'Xử lý báo lỗi từ người đọc' },
+        { href: '/admin/feedback', label: '📨 Góp ý người dùng', desc: 'Xem góp ý gửi về' },
     ]
 
     return (
@@ -72,11 +75,10 @@ export default function AdminDashboard() {
             ) : stats && (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     <StatCard label="Tổng truyện" value={stats.truyenCount} icon="📚" />
-                    <StatCard label="Người dùng" value={stats.userCount} icon="👥" sub={`+${stats.newUsers} tuần này`} />
+                    <StatCard label="Người dùng" value={stats.userCount} icon="👥" sub={`+${stats.newUsers} trong 7 ngày`} />
                     <StatCard label="Bình luận" value={stats.commentCount} icon="💬" />
                     <StatCard label="Tổng chương" value={stats.chapterCount} icon="📄" />
                     <StatCard label="Tổng lượt xem" value={stats.totalViews} icon="👁" />
-                    <StatCard label="New users (7 ngày)" value={stats.newUsers} icon="🆕" />
                 </div>
             )}
 

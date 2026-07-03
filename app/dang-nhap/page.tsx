@@ -100,11 +100,7 @@ export default function DangNhapPage() {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="accent-[rgb(var(--primary))]" />
-                                <span className="text-foreground/90">Ghi nhớ đăng nhập</span>
-                            </label>
+                        <div className="flex items-center justify-end text-sm">
                             <Link href="/quen-mat-khau" className="text-primary hover:underline">Quên mật khẩu?</Link>
                         </div>
 

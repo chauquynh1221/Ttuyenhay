@@ -20,14 +20,22 @@ export async function GET(req: NextRequest) {
         return NextResponse.redirect(`${baseUrl}/dang-nhap?error=missing_code`)
     }
 
-    // Parse returnTo từ state
+    // Parse state + KIỂM TRA nonce chống CSRF (so với cookie đã đặt lúc khởi tạo)
     let returnTo = '/'
+    let stateNonce = ''
     try {
         if (state) {
             const parsed = JSON.parse(Buffer.from(state, 'base64url').toString())
-            returnTo = parsed.returnTo || '/'
+            const rt = parsed.returnTo
+            returnTo = (typeof rt === 'string' && rt.startsWith('/') && !rt.startsWith('//')) ? rt : '/'
+            stateNonce = parsed.nonce || ''
         }
     } catch { /* ignore */ }
+
+    const cookieNonce = req.cookies.get('g_oauth_state')?.value
+    if (!stateNonce || !cookieNonce || stateNonce !== cookieNonce) {
+        return NextResponse.redirect(`${baseUrl}/dang-nhap?error=invalid_state`)
+    }
 
     try {
         const clientId = process.env.GOOGLE_CLIENT_ID!
@@ -71,10 +79,14 @@ export async function GET(req: NextRequest) {
         })
 
         if (user) {
-            // User đã tồn tại → cập nhật googleId nếu chưa có
+            if (user.isBanned) {
+                return NextResponse.redirect(`${baseUrl}/dang-nhap?error=banned`)
+            }
+            // User đã tồn tại → cập nhật googleId nếu chưa có; email từ Google coi như đã xác thực
             if (!user.googleId) {
                 user.googleId = googleUser.id
                 user.avatar = user.avatar || googleUser.picture
+                user.emailVerified = true
                 await user.save()
             }
         } else {
@@ -85,6 +97,7 @@ export async function GET(req: NextRequest) {
                 googleId: googleUser.id,
                 avatar: googleUser.picture,
                 role: 'user',
+                emailVerified: true, // email Google đã xác thực
                 // Không có password — đăng nhập qua Google
             })
         }
@@ -98,8 +111,10 @@ export async function GET(req: NextRequest) {
         })
         await setAuthCookie(token)
 
-        // Bước 5: Redirect về trang gốc
-        return NextResponse.redirect(`${baseUrl}${returnTo}`)
+        // Bước 5: Redirect về trang gốc + xoá cookie state
+        const res = NextResponse.redirect(`${baseUrl}${returnTo}`)
+        res.cookies.delete('g_oauth_state')
+        return res
 
     } catch (err) {
         console.error('Google OAuth callback error:', err)

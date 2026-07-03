@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 export const metadata = {
     title: 'Bảng Xếp Hạng Truyện | Bongmeow',
-    description: 'Top truyện được đọc nhiều nhất ngày, tuần, tháng và tất cả thời gian.',
+    description: 'Bảng xếp hạng truyện: xem nhiều nhất, đánh giá cao nhất, mới cập nhật và đã hoàn thành.',
 }
 
 async function getRankings() {

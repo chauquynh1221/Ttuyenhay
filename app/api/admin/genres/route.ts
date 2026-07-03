@@ -2,13 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Genre from '@/models/Genre'
 import Truyen from '@/models/Truyen'
-import { getCurrentUser } from '@/lib/auth'
-
-async function requireAdmin() {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'admin') throw new Error('Unauthorized')
-    return user
-}
+import { requireAdmin } from '@/lib/auth'
 
 // GET — danh sách thể loại kèm count truyện
 export async function GET() {
@@ -17,14 +11,18 @@ export async function GET() {
         await dbConnect()
         const genres = await Genre.find().sort({ name: 1 }).lean()
 
-        // Đếm số truyện mỗi thể loại
-        const genresWithCount = await Promise.all(
-            genres.map(async (g: any) => ({
-                ...g,
-                _id: g._id.toString(),
-                storyCount: await Truyen.countDocuments({ genres: g.name }),
-            }))
-        )
+        // Đếm số truyện mỗi thể loại bằng 1 aggregation (thay vì N query)
+        const counts = await Truyen.aggregate([
+            { $unwind: '$genres' },
+            { $group: { _id: '$genres', count: { $sum: 1 } } },
+        ])
+        const countByName = new Map<string, number>(counts.map((c: any) => [c._id, c.count]))
+
+        const genresWithCount = genres.map((g: any) => ({
+            ...g,
+            _id: g._id.toString(),
+            storyCount: countByName.get(g.name) || 0,
+        }))
         return NextResponse.json({ success: true, genres: genresWithCount })
     } catch (e: any) {
         if (e.message === 'Unauthorized') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

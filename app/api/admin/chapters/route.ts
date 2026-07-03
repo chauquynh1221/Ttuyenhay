@@ -2,14 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Chapter from '@/models/Chapter'
 import Truyen from '@/models/Truyen'
-import { getCurrentUser } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
+import { clampLimit, parsePage } from '@/lib/apiHelpers'
 import mongoose from 'mongoose'
-
-async function requireAdmin() {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'admin') throw new Error('Unauthorized')
-    return user
-}
 
 // GET — danh sách chương theo truyện
 export async function GET(req: NextRequest) {
@@ -19,8 +14,8 @@ export async function GET(req: NextRequest) {
         const truyenId = req.nextUrl.searchParams.get('truyenId')
         if (!truyenId) return NextResponse.json({ error: 'Thiếu truyenId' }, { status: 400 })
 
-        const page = parseInt(req.nextUrl.searchParams.get('page') || '1')
-        const limit = parseInt(req.nextUrl.searchParams.get('limit') || '50')
+        const page = parsePage(req.nextUrl.searchParams.get('page'))
+        const limit = clampLimit(req.nextUrl.searchParams.get('limit'), 50, 200)
 
         const [chapters, total] = await Promise.all([
             Chapter.find({ truyenId: new mongoose.Types.ObjectId(truyenId) })
@@ -93,10 +88,18 @@ export async function PUT(req: NextRequest) {
         const { id, title, content, chapterNumber } = await req.json()
         if (!id) return NextResponse.json({ error: 'Thiếu ID' }, { status: 400 })
 
+        const current = await Chapter.findById(id).select('truyenId chapterNumber').lean() as any
+        if (!current) return NextResponse.json({ error: 'Chương không tồn tại' }, { status: 404 })
+
         const updates: any = {}
         if (title !== undefined) updates.title = title.trim()
         if (content !== undefined) updates.content = content.trim()
-        if (chapterNumber !== undefined) updates.chapterNumber = chapterNumber
+        if (chapterNumber !== undefined && chapterNumber !== current.chapterNumber) {
+            // Chặn đổi sang số chương đã tồn tại
+            const dup = await Chapter.findOne({ truyenId: current.truyenId, chapterNumber, _id: { $ne: id } }).select('_id').lean()
+            if (dup) return NextResponse.json({ error: `Chương ${chapterNumber} đã tồn tại` }, { status: 409 })
+            updates.chapterNumber = chapterNumber
+        }
 
         const chapter = await Chapter.findByIdAndUpdate(id, updates, { new: true })
         if (!chapter) return NextResponse.json({ error: 'Chương không tồn tại' }, { status: 404 })

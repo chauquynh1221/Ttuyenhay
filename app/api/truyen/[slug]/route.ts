@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Chapter from '@/models/Chapter'
+import { requireAdmin } from '@/lib/auth'
 
 // GET /api/truyen/[slug] - Get truyen details
 export async function GET(
@@ -28,8 +29,7 @@ export async function GET(
       .select('chapterNumber title createdAt')
       .lean()
 
-    // Increment views
-    await Truyen.findByIdAndUpdate(truyen._id, { $inc: { views: 1 } })
+    // (Đếm view đã chuyển sang POST /api/truyen/[slug]/view có dedupe — GET không side-effect)
 
     return NextResponse.json({
       success: true,
@@ -52,6 +52,7 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    await requireAdmin()
     await dbConnect()
     const { slug } = await params
     const body = await request.json()
@@ -74,6 +75,9 @@ export async function PUT(
       data: truyen,
     })
   } catch (error: any) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 400 }
@@ -87,6 +91,7 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    await requireAdmin()
     await dbConnect()
     const { slug } = await params
 
@@ -107,6 +112,9 @@ export async function DELETE(
       message: 'Xóa truyện thành công',
     })
   } catch (error: any) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

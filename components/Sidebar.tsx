@@ -10,9 +10,9 @@ interface TruyenItem {
 }
 
 interface SidebarProps {
-  topDaily?: TruyenItem[]
-  topMonthly?: TruyenItem[]
-  topAllTime?: TruyenItem[]
+  topViews?: TruyenItem[]
+  topRating?: TruyenItem[]
+  topUpdated?: TruyenItem[]
 }
 
 function RankBadge({ n }: { n: number }) {
@@ -62,12 +62,12 @@ function SidebarBox({ title, icon: Icon, children }: { title: string; icon: any;
   )
 }
 
-export default function Sidebar({ topDaily = [], topMonthly = [], topAllTime = [] }: SidebarProps) {
+export default function Sidebar({ topViews = [], topRating = [], topUpdated = [] }: SidebarProps) {
   return (
     <div className="space-y-4 lg:sticky lg:top-32">
-      <SidebarBox title="Top tuần" icon={Fire}><TopList items={topDaily} /></SidebarBox>
-      <SidebarBox title="Top tháng" icon={TrendingUp}><TopList items={topMonthly} /></SidebarBox>
-      <SidebarBox title="Top all-time" icon={Crown}><TopList items={topAllTime} showRating /></SidebarBox>
+      <SidebarBox title="Xem nhiều nhất" icon={Fire}><TopList items={topViews} /></SidebarBox>
+      <SidebarBox title="Đánh giá cao" icon={Crown}><TopList items={topRating} showRating /></SidebarBox>
+      <SidebarBox title="Mới cập nhật" icon={TrendingUp}><TopList items={topUpdated} /></SidebarBox>
     </div>
   )
 }

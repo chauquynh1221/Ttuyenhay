@@ -10,6 +10,8 @@ import RatingWidget from '@/components/RatingWidget'
 import RelatedTruyen from '@/components/RelatedTruyen'
 import { CatEars } from '@/components/icons'
 import MarkChapterSeen from '@/components/MarkChapterSeen'
+import ReadChapterMarks from '@/components/ReadChapterMarks'
+import ViewPing from '@/components/ViewPing'
 import { notFound } from 'next/navigation'
 import { slugify } from '@/lib/slugify'
 import dbConnect from '@/lib/mongodb'
@@ -106,6 +108,8 @@ export default async function TruyenDetailPage({ params, searchParams }: PagePro
   return (
     <>
       <MarkChapterSeen slug={truyen.slug} />
+      <ReadChapterMarks slug={truyen.slug} />
+      <ViewPing slug={truyen.slug} />
 
       {/* === CINEMATIC HEADER: full-bleed, backdrop từ bìa === */}
       <section className="relative overflow-hidden">
@@ -192,9 +196,9 @@ export default async function TruyenDetailPage({ params, searchParams }: PagePro
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
                 {truyen.chapters.map((ch) => (
-                  <Link key={ch.id} href={`/truyen/${truyen.slug}/${ch.chapterNumber}`}
+                  <Link key={ch.id} href={`/truyen/${truyen.slug}/${ch.chapterNumber}`} data-ch={ch.chapterNumber}
                     className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-md border border-transparent hover:border-border hover:bg-surface-2 transition-all group">
-                    <span className="text-sm text-foreground group-hover:text-primary line-clamp-1 flex-1 min-w-0">
+                    <span data-ch-title className="text-sm text-foreground group-hover:text-primary line-clamp-1 flex-1 min-w-0 flex items-center">
                       {/^ch(u|ươ)ng\s/i.test(ch.title) ? ch.title : `Chương ${ch.chapterNumber}: ${ch.title}`}
                     </span>
                     <span className="text-xs text-muted-2 flex-shrink-0">{new Date(ch.createdAt).toLocaleDateString('vi-VN')}</span>

@@ -2,13 +2,19 @@ import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 
 const JWT_SECRET = process.env.JWT_SECRET
-if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
-    // Cảnh báo (không throw để tránh vỡ build); HÃY đặt JWT_SECRET trên Vercel/production.
-    console.warn('[auth] JWT_SECRET chưa được cấu hình — token sẽ dùng secret mặc định KHÔNG an toàn. Hãy đặt biến môi trường JWT_SECRET.')
+const DEV_FALLBACK = 'dev-only-insecure-secret-do-not-use-in-production'
+
+// Lấy khoá ký. Ở production BẮT BUỘC có JWT_SECRET — nếu thiếu thì ném lỗi
+// (thay vì âm thầm dùng secret mặc định đã lộ trong source).
+function getSecret(): Uint8Array {
+    if (!JWT_SECRET) {
+        if (process.env.NODE_ENV === 'production') {
+            throw new Error('[auth] JWT_SECRET chưa được cấu hình ở production — hãy đặt biến môi trường JWT_SECRET.')
+        }
+        return new TextEncoder().encode(DEV_FALLBACK)
+    }
+    return new TextEncoder().encode(JWT_SECRET)
 }
-const SECRET = new TextEncoder().encode(
-    JWT_SECRET || 'dev-only-insecure-secret-do-not-use-in-production'
-)
 
 const COOKIE_NAME = 'tf_token'
 const TOKEN_EXPIRY = '7d'
@@ -17,7 +23,7 @@ export interface JWTPayload {
     userId: string
     email: string
     name: string
-    role: 'user' | 'vip' | 'admin'
+    role: 'user' | 'admin'
 }
 
 // Tạo JWT token
@@ -26,13 +32,13 @@ export async function signToken(payload: JWTPayload): Promise<string> {
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime(TOKEN_EXPIRY)
-        .sign(SECRET)
+        .sign(getSecret())
 }
 
 // Verify JWT token
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
     try {
-        const { payload } = await jwtVerify(token, SECRET)
+        const { payload } = await jwtVerify(token, getSecret())
         return payload as unknown as JWTPayload
     } catch {
         return null
@@ -49,6 +55,14 @@ export async function getCurrentUser(): Promise<JWTPayload | null> {
     } catch {
         return null
     }
+}
+
+// Yêu cầu quyền admin — dùng chung cho mọi API cần bảo vệ.
+// Ném Error('Unauthorized') để route bắt và trả 401.
+export async function requireAdmin(): Promise<JWTPayload> {
+    const user = await getCurrentUser()
+    if (!user || user.role !== 'admin') throw new Error('Unauthorized')
+    return user
 }
 
 // Set cookie sau khi login

@@ -18,10 +18,15 @@ export interface IUser extends Document {
   password?: string
   googleId?: string
   avatar?: string
-  role: 'user' | 'vip' | 'admin'
+  role: 'user' | 'admin'
+  isBanned: boolean
+  emailVerified: boolean
+  emailVerifyToken?: string
+  emailVerifyExpires?: Date
+  resetToken?: string
+  resetTokenExpires?: Date
   bookmarks: IBookmark[]
   readingHistory: IReadingHistory[]
-  vipExpiresAt?: Date
   createdAt: Date
   updatedAt: Date
   comparePassword(candidatePassword: string): Promise<boolean>
@@ -56,10 +61,16 @@ const UserSchema: Schema = new Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'vip', 'admin'],
+      enum: ['user', 'admin'],
       default: 'user',
       index: true,
     },
+    isBanned: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
+    emailVerifyToken: { type: String, index: true, sparse: true },
+    emailVerifyExpires: { type: Date },
+    resetToken: { type: String, index: true, sparse: true },
+    resetTokenExpires: { type: Date },
     bookmarks: [
       {
         truyenId: {
@@ -92,9 +103,6 @@ const UserSchema: Schema = new Schema(
         },
       },
     ],
-    vipExpiresAt: {
-      type: Date,
-    },
   },
   {
     timestamps: true,
@@ -104,11 +112,14 @@ const UserSchema: Schema = new Schema(
 // Lưu ý: email & role đã có `index: true` trong schema nên KHÔNG khai báo lại ở đây
 // (tránh cảnh báo "Duplicate schema index" của Mongoose).
 
-// Limit reading history to last 100 items
+// Giới hạn lịch sử đọc 100 mục & tủ sách 500 mục (tránh document phình to)
 UserSchema.pre('save', function (next) {
   const user = this as any
   if (user.readingHistory && user.readingHistory.length > 100) {
     user.readingHistory = user.readingHistory.slice(-100)
+  }
+  if (user.bookmarks && user.bookmarks.length > 500) {
+    user.bookmarks = user.bookmarks.slice(-500)
   }
   next()
 })

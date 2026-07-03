@@ -5,10 +5,22 @@ import Sidebar from '@/components/Sidebar'
 import GenrePageClient from './GenrePage'
 import dbConnect from '@/lib/mongodb'
 import Genre from '@/models/Genre'
+import { getSidebarData } from '@/lib/sidebarData'
 
 interface PageProps {
   params: Promise<{ genre: string }>
   searchParams: Promise<{ page?: string; sort?: string }>
+}
+
+function formatTimeAgo(date: Date): string {
+  const diff = Date.now() - new Date(date).getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  if (minutes < 60) return `${Math.max(1, minutes)} phút trước`
+  if (hours < 24) return `${hours} giờ trước`
+  if (days < 30) return `${days} ngày trước`
+  return `${Math.floor(days / 30)} tháng trước`
 }
 
 export default async function GenrePage({ params, searchParams }: PageProps) {
@@ -40,10 +52,21 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     }
   }
 
-  const mockData = {
-    items: truyenData.data,
-    totalPages: truyenData.pagination.pages,
-  }
+  const items = truyenData.data.map((t: any) => ({
+    id: t._id,
+    title: t.title,
+    slug: t.slug,
+    author: t.author,
+    genres: t.genres,
+    isHot: t.isHot,
+    isFull: t.isFull,
+    isNew: t.isNew,
+    coverImage: t.coverImage,
+    latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
+    updatedAt: formatTimeAgo(t.updatedAt),
+  }))
+  const totalPages = truyenData.pagination.pages
+  const sidebar = await getSidebarData()
 
   return (
     <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
@@ -58,21 +81,24 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5 sm:gap-6 my-6">
-            {mockData.items.map((truyen) => (
+            {items.map((truyen: any) => (
               <TruyenCard key={truyen.id} {...truyen} />
             ))}
           </div>
+          {items.length === 0 && (
+            <div className="text-center py-12 text-muted-2">Chưa có truyện nào trong thể loại này.</div>
+          )}
 
           <Pagination
             currentPage={currentPage}
-            totalPages={mockData.totalPages}
+            totalPages={totalPages}
             baseUrl={`/the-loai/${genreSlug}`}
           />
         </div>
 
         {/* Sidebar */}
         <div className="lg:w-[27%]">
-          <Sidebar />
+          <Sidebar {...sidebar} />
         </div>
       </div>
     </div>

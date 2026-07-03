@@ -3,6 +3,8 @@ import dbConnect from '@/lib/mongodb'
 import Comment from '@/models/Comment'
 import Truyen from '@/models/Truyen'
 import { getCurrentUser } from '@/lib/auth'
+import { isRateLimited } from '@/lib/ratelimit'
+import { clientIp, sanitizeText } from '@/lib/apiHelpers'
 import mongoose from 'mongoose'
 
 // GET /api/comments?truyenId=xxx&chapterId=yyy&page=1
@@ -78,22 +80,30 @@ export async function GET(req: NextRequest) {
 // POST /api/comments — đăng bình luận (logged in hoặc guest)
 export async function POST(req: NextRequest) {
     try {
+        // Chống spam: tối đa 8 bình luận/phút mỗi IP
+        if (isRateLimited(`comment:${clientIp(req)}`, 8, 60_000)) {
+            return NextResponse.json({ error: 'Bạn bình luận quá nhanh, thử lại sau ít phút.' }, { status: 429 })
+        }
         const currentUser = await getCurrentUser()
         await dbConnect()
-        const { truyenId, chapterId, content, parentId, guestName } = await req.json()
+        const raw = await req.json()
+        const { truyenId, chapterId, parentId } = raw
+        // Sanitize input (chống stored-XSS)
+        const content = sanitizeText(raw.content)
+        const guestName = sanitizeText(raw.guestName)
 
         // Nếu không login: phải có guestName
-        if (!currentUser && (!guestName || !guestName.trim())) {
+        if (!currentUser && !guestName) {
             return NextResponse.json({ error: 'Vui lòng nhập tên để bình luận' }, { status: 400 })
         }
 
-        if (!truyenId || !content?.trim()) {
+        if (!truyenId || !content) {
             return NextResponse.json({ error: 'Thiếu nội dung hoặc truyenId' }, { status: 400 })
         }
-        if (content.trim().length < 2) {
+        if (content.length < 2) {
             return NextResponse.json({ error: 'Bình luận quá ngắn' }, { status: 400 })
         }
-        if (content.trim().length > 2000) {
+        if (content.length > 2000) {
             return NextResponse.json({ error: 'Bình luận tối đa 2000 ký tự' }, { status: 400 })
         }
 
@@ -106,8 +116,8 @@ export async function POST(req: NextRequest) {
             chapterId: chapterId ? new mongoose.Types.ObjectId(chapterId) : null,
             parentId: parentId ? new mongoose.Types.ObjectId(parentId) : null,
             userId: currentUser ? new mongoose.Types.ObjectId(currentUser.userId) : null,
-            userName: currentUser ? currentUser.name : guestName.trim().slice(0, 30),
-            content: content.trim(),
+            userName: currentUser ? currentUser.name : guestName.slice(0, 30),
+            content,
         })
 
         const serialized = {
