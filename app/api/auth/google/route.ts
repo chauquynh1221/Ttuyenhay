@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { getRequestOrigin } from '@/lib/apiHelpers'
 
 // Chỉ nhận path nội bộ (chống open redirect)
 function safeReturnTo(v: string | null): string {
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Google OAuth chưa được cấu hình' }, { status: 500 })
     }
 
-    const redirectUri = `${process.env.NEXTAUTH_URL}/api/auth/google/callback`
+    const redirectUri = `${getRequestOrigin(req)}/api/auth/google/callback`
     const scope = 'openid email profile'
 
     // state chống CSRF: random nonce + returnTo, ĐỒNG THỜI lưu nonce vào cookie để callback so khớp

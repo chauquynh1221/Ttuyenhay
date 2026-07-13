@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import User from '@/models/User'
 import { signToken, setAuthCookie } from '@/lib/auth'
+import { getRequestOrigin } from '@/lib/apiHelpers'
 
 // GET /api/auth/google/callback — Google redirect về đây sau khi user đồng ý
 export async function GET(req: NextRequest) {
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    // Lấy domain THẬT từ request → ở lại đúng domain (không đá về localhost do env sai)
+    const baseUrl = getRequestOrigin(req)
     const { searchParams } = req.nextUrl
     const code = searchParams.get('code')
     const error = searchParams.get('error')
