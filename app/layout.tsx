@@ -8,6 +8,8 @@ import ToastProvider from '@/components/Toast'
 import MobileTabBar from '@/components/MobileTabBar'
 import AntiDevtools from '@/components/AntiDevtools'
 import PWARegister from '@/components/PWARegister'
+import Analytics from '@/components/Analytics'
+import GoogleAds from '@/components/GoogleAds'
 import dbConnect from '@/lib/mongodb'
 import GenreModel from '@/models/Genre'
 
@@ -82,6 +84,8 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen bg-bg ambient-glow text-foreground antialiased">
         <ToastProvider>
+          <Analytics />
+          <GoogleAds />
           <AntiDevtools />
           <PWARegister />
           <Header genres={genres} />

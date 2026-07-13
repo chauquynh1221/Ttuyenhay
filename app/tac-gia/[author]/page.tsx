@@ -3,6 +3,7 @@ import Truyen from '@/models/Truyen'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import { escapeRegex } from '@/lib/apiHelpers'
 
 interface PageProps {
     params: Promise<{ author: string }>
@@ -23,7 +24,8 @@ export default async function TacGiaPage({ params }: PageProps) {
     const authorName = decodeURIComponent(author)
 
     const truyenList = await Truyen.find({
-        author: { $regex: new RegExp(`^${authorName}$`, 'i') }
+        // escapeRegex → chống ReDoS / regex-injection từ param URL
+        author: { $regex: new RegExp(`^${escapeRegex(authorName)}$`, 'i') }
     })
         .sort({ createdAt: -1 })
         .select('title slug coverImage totalChapters status views rating genres createdAt')

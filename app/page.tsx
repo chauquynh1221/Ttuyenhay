@@ -6,6 +6,7 @@ import RankingBand from '@/components/RankingBand'
 import FeaturedBento from '@/components/FeaturedBento'
 import UpdateList from '@/components/UpdateList'
 import Reveal from '@/components/Reveal'
+import AdSlot from '@/components/AdSlot'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Genre from '@/models/Genre'
@@ -80,6 +81,8 @@ export default async function Home() {
         <Reveal><RankingBand items={ranking} /></Reveal>
 
         <Reveal><FeaturedBento items={bento} /></Reveal>
+
+        <AdSlot slot={process.env.NEXT_PUBLIC_AD_SLOT_HOME} />
 
         <Reveal><UpdateList items={truyenMoi} /></Reveal>
 

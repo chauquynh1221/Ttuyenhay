@@ -11,6 +11,7 @@ import ReportButton from '@/components/ReportButton'
 import ImmersiveReading from '@/components/ImmersiveReading'
 import AutoScroll from '@/components/AutoScroll'
 import ChapterComplete from '@/components/ChapterComplete'
+import AdSlot from '@/components/AdSlot'
 import { Clock } from '@/components/icons'
 import { useReadingSettings, READING_THEMES } from '@/lib/useReadingSettings'
 
@@ -205,6 +206,8 @@ export default function ChapterContent({ chapter }: { chapter: ChapterData }) {
         <p className="text-center text-xs opacity-40 mt-5 select-none">
           Nguồn: <b>Bongmeow</b> · Vui lòng không sao chép, đăng lại nội dung.
         </p>
+
+        <AdSlot slot={process.env.NEXT_PUBLIC_AD_SLOT_READ} />
 
         <ChapterComplete
           slug={chapter.truyenSlug}
