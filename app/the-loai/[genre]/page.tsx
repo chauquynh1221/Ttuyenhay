@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar'
 import GenrePageClient from './GenrePage'
 import dbConnect from '@/lib/mongodb'
 import Genre from '@/models/Genre'
+import { queryTruyen } from '@/lib/truyenQuery'
 import { getSidebarData } from '@/lib/sidebarData'
 
 interface PageProps {
@@ -36,21 +37,15 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
 
-  // Fetch data from API
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  // Query THẲNG DB (không tự fetch HTTP → chạy đúng trên Vercel + nhanh hơn)
   const sortParam = sort === 'rating' ? 'rating' : sort === 'views' ? 'views' : sort === 'createdAt' ? 'createdAt' : 'updatedAt'
-  const res = await fetch(
-    `${baseUrl}/api/truyen?genre=${encodeURIComponent(genreName)}&page=${page}&limit=20&sort=${sortParam}&order=desc`,
-    { cache: 'no-store' }
-  )
-
-  let truyenData: { data: any[]; pagination: { pages: number } } = { data: [], pagination: { pages: 1 } }
-  if (res.ok) {
-    const json = await res.json()
-    if (json.success) {
-      truyenData = json
-    }
-  }
+  const truyenData = await queryTruyen({
+    genre: genreName,
+    page,
+    limit: 20,
+    sort: sortParam,
+    order: 'desc',
+  })
 
   const items = truyenData.data.map((t: any) => ({
     id: t._id,

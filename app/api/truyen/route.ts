@@ -2,62 +2,25 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import { requireAdmin } from '@/lib/auth'
-import { clampLimit, parsePage } from '@/lib/apiHelpers'
+import { queryTruyen } from '@/lib/truyenQuery'
 
 // GET /api/truyen - Get list of truyen with filters and pagination
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect()
-
-    const searchParams = request.nextUrl.searchParams
-    const page = parsePage(searchParams.get('page'))
-    const limit = clampLimit(searchParams.get('limit'))
-    const genre = searchParams.get('genre')
-    const status = searchParams.get('status')
-    const isHot = searchParams.get('isHot')
-    const isFull = searchParams.get('isFull')
-    const isNew = searchParams.get('isNew')
-    const sort = searchParams.get('sort') || 'updatedAt'
-    const order = searchParams.get('order') || 'desc'
-    const since = searchParams.get('since') // ISO date string for time-based filtering (Top Daily/Monthly)
-
-    // Build query
-    const query: any = {}
-    if (genre) query.genres = genre
-    if (status) query.status = status
-    if (isHot === 'true') query.isHot = true
-    if (isFull === 'true') query.isFull = true
-    if (isNew === 'true') query.isNew = true
-    // FIX #3: Filter theo thời gian cho Top Ngày/Tháng
-    if (since) query.updatedAt = { $gte: new Date(since) }
-
-    // Build sort - handle both 'views' and '-views' format
-    const sortObj: any = {}
-    const sortField = sort.startsWith('-') ? sort.slice(1) : sort
-    sortObj[sortField] = order === 'desc' ? -1 : 1
-
-    const skip = (page - 1) * limit
-
-    const [truyen, total] = await Promise.all([
-      Truyen.find(query)
-        .sort(sortObj)
-        .limit(limit)
-        .skip(skip)
-        .select('-__v')
-        .lean(),
-      Truyen.countDocuments(query),
-    ])
-
-    return NextResponse.json({
-      success: true,
-      data: truyen,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
+    const sp = request.nextUrl.searchParams
+    const result = await queryTruyen({
+      page: sp.get('page'),
+      limit: sp.get('limit'),
+      genre: sp.get('genre'),
+      status: sp.get('status'),
+      isHot: sp.get('isHot'),
+      isFull: sp.get('isFull'),
+      isNew: sp.get('isNew'),
+      sort: sp.get('sort'),
+      order: sp.get('order'),
+      since: sp.get('since'), // ISO date cho Top Ngày/Tháng
     })
+    return NextResponse.json({ success: true, ...result })
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },

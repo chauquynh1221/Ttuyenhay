@@ -5,6 +5,7 @@ import Pagination from '@/components/Pagination'
 import Sidebar from '@/components/Sidebar'
 import ViewToggle from './ViewToggle'
 import EmptyState from '@/components/EmptyState'
+import { searchTruyen } from '@/lib/truyenQuery'
 import { getSidebarData } from '@/lib/sidebarData'
 
 const GENRES = [
@@ -47,38 +48,25 @@ export default async function SearchPage({ searchParams }: PageProps) {
   const hasFilters = q.trim() || genre || status
   if (hasFilters) {
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-      const params = new URLSearchParams({
-        page,
-        limit: '20',
-        sort,
-        ...(q.trim() && { q: q.trim() }),
-        ...(genre && { genre }),
-        ...(status && { status }),
-      })
-      const res = await fetch(`${baseUrl}/api/search?${params}`, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success) {
-          results = data.data.map((t: any) => ({
-            id: t._id,
-            title: t.title,
-            slug: t.slug,
-            author: t.author,
-            genres: t.genres,
-            isHot: t.isHot,
-            isFull: t.isFull,
-            isNew: t.isNew,
-            coverImage: t.coverImage,
-            views: t.views,
-            totalChapters: t.totalChapters,
-            latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
-            updatedAt: formatTimeAgo(t.updatedAt),
-          }))
-          totalPages = data.pagination.pages
-          totalResults = data.pagination.total
-        }
-      }
+      // Query THẲNG DB (không tự fetch HTTP → chạy đúng trên Vercel + nhanh hơn)
+      const data = await searchTruyen({ page, limit: 20, sort, q: q.trim(), genre, status })
+      results = data.data.map((t: any) => ({
+        id: t._id,
+        title: t.title,
+        slug: t.slug,
+        author: t.author,
+        genres: t.genres,
+        isHot: t.isHot,
+        isFull: t.isFull,
+        isNew: t.isNew,
+        coverImage: t.coverImage,
+        views: t.views,
+        totalChapters: t.totalChapters,
+        latestChapter: { number: t.totalChapters, title: `Chương ${t.totalChapters}` },
+        updatedAt: formatTimeAgo(t.updatedAt),
+      }))
+      totalPages = data.pagination.pages
+      totalResults = data.pagination.total
     } catch (error) {
       console.error('Error searching:', error)
     }

@@ -3,6 +3,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Pagination from '@/components/Pagination'
 import Sidebar from '@/components/Sidebar'
 import SortDropdown from './SortDropdown'
+import { queryTruyen } from '@/lib/truyenQuery'
 import { getSidebarData } from '@/lib/sidebarData'
 
 interface PageProps {
@@ -51,50 +52,38 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     filter: {},
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-
   // FIX #6: Sort dropdown giờ có tác dụng thực sự qua searchParams
   // Nếu user chọn sort, ghi đè filter mặc định của category
-  const effectiveFilter = {
+  const effectiveFilter: Record<string, string> = {
     ...categoryInfo.filter,
     ...(sort ? { sort, order: order || 'desc' } : {}),
   }
 
-  const filterParams = new URLSearchParams({
-    page,
-    limit: '20',
-    ...effectiveFilter,
-  })
-
-  // Fetch main content + sidebar data song song
-  const [res, topAllTimeRes] = await Promise.all([
-    fetch(`${baseUrl}/api/truyen?${filterParams.toString()}`, { cache: 'no-store' }),
-    fetch(`${baseUrl}/api/truyen?limit=10&sort=views&order=desc`, { cache: 'no-store' }),
+  // Query THẲNG DB (không tự fetch HTTP → chạy đúng trên Vercel + nhanh hơn)
+  const [truyenData, topData] = await Promise.all([
+    queryTruyen({
+      page,
+      limit: 20,
+      genre: effectiveFilter.genre,
+      status: effectiveFilter.status,
+      isHot: effectiveFilter.isHot,
+      isFull: effectiveFilter.isFull,
+      isNew: effectiveFilter.isNew,
+      sort: effectiveFilter.sort,
+      order: effectiveFilter.order,
+    }),
+    queryTruyen({ limit: 10, sort: 'views', order: 'desc' }),
   ])
 
-  let truyenData: { data: any[]; pagination: { pages: number } } = {
-    data: [],
-    pagination: { pages: 1 },
-  }
-  if (res.ok) {
-    const json = await res.json()
-    if (json.success) truyenData = json
-  }
-
   // Sidebar data - Top All Time cho trang danh sách
-  let topAllTime: { id: string; title: string; slug: string; views?: number; rating?: number }[] = []
-  if (topAllTimeRes.ok) {
-    const json = await topAllTimeRes.json()
-    if (json.success) {
-      topAllTime = json.data.map((t: any) => ({
-        id: t._id,
-        title: t.title,
-        slug: t.slug,
-        views: t.views,
-        rating: t.rating,
-      }))
-    }
-  }
+  const topAllTime: { id: string; title: string; slug: string; views?: number; rating?: number }[] =
+    topData.data.map((t: any) => ({
+      id: t._id,
+      title: t.title,
+      slug: t.slug,
+      views: t.views,
+      rating: t.rating,
+    }))
 
   const items = truyenData.data.map((t: any) => ({
     id: t._id,

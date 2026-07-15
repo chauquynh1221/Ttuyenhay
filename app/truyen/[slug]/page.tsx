@@ -17,6 +17,7 @@ import { slugify } from '@/lib/slugify'
 import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Chapter from '@/models/Chapter'
+import { getBaseUrl } from '@/lib/getBaseUrl'
 
 export const revalidate = 600
 
@@ -69,7 +70,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
   const truyen = await getTruyenDetail(slug, 1)
   if (!truyen) return { title: 'Không tìm thấy' }
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const baseUrl = await getBaseUrl()
   return {
     title: `${truyen.title} - ${truyen.author}`,
     description: `Đọc ${truyen.title} của ${truyen.author}. ${truyen.totalChapters} chương. ${truyen.description.slice(0, 120)}...`,

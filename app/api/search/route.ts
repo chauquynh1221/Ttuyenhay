@@ -1,75 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dbConnect from '@/lib/mongodb'
-import Truyen from '@/models/Truyen'
-import { escapeRegex, clampLimit, parsePage } from '@/lib/apiHelpers'
+import { searchTruyen } from '@/lib/truyenQuery'
 
 // GET /api/search - Search truyen với bộ lọc nâng cao
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect()
-
-    const searchParams = request.nextUrl.searchParams
-    const q = searchParams.get('q') || ''
-    const genre = searchParams.get('genre') || ''
-    const status = searchParams.get('status') || ''
-    const sort = searchParams.get('sort') || 'relevance'
-    const page = parsePage(searchParams.get('page'))
-    const limit = clampLimit(searchParams.get('limit'))
-    const skip = (page - 1) * limit
-
-    // Build query
-    const filter: any = {}
-
-    if (q.trim()) {
-      // Normalize: cho phép tìm kiếm cả có dấu và không dấu
-      const normalized = q.trim()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')  // bỏ dấu
-        .replace(/đ/gi, 'd')
-      const patterns = [...new Set([normalized, q.trim()])].map(escapeRegex)
-      filter.$or = patterns.flatMap((p: string) => [
-        { title: { $regex: p, $options: 'i' } },
-        { author: { $regex: p, $options: 'i' } },
-      ])
-    }
-
-    if (genre) {
-      filter.genres = { $in: [genre] }
-    }
-
-    if (status === 'full') {
-      filter.isFull = true
-    } else if (status === 'ongoing') {
-      filter.isFull = { $ne: true }
-    }
-
-    // Sort
-    let sortQuery: any = { views: -1 }
-    if (sort === 'newest') sortQuery = { createdAt: -1 }
-    else if (sort === 'updated') sortQuery = { updatedAt: -1 }
-    else if (sort === 'chapters') sortQuery = { totalChapters: -1 }
-    else if (sort === 'rating') sortQuery = { rating: -1 }
-
-    const [truyen, total] = await Promise.all([
-      Truyen.find(filter)
-        .sort(sortQuery)
-        .limit(limit)
-        .skip(skip)
-        .select('-__v')
-        .lean(),
-      Truyen.countDocuments(filter),
-    ])
-
-    return NextResponse.json({
-      success: true,
-      data: truyen,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
+    const sp = request.nextUrl.searchParams
+    const result = await searchTruyen({
+      q: sp.get('q'),
+      genre: sp.get('genre'),
+      status: sp.get('status'),
+      sort: sp.get('sort'),
+      page: sp.get('page'),
+      limit: sp.get('limit'),
     })
+    return NextResponse.json({ success: true, ...result })
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import TruyenCard from './TruyenCard'
 import { slugify } from '@/lib/slugify'
+import { queryTruyen } from '@/lib/truyenQuery'
 
 interface ITruyen {
     id: string
@@ -22,15 +23,9 @@ interface RelatedTruyenProps {
 
 async function fetchRelated(currentSlug: string, genres: string[]): Promise<ITruyen[]> {
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+        // Query THẲNG DB (không tự fetch HTTP → chạy đúng trên Vercel + nhanh hơn)
         const genre = genres[0] || ''
-        const res = await fetch(
-            `${baseUrl}/api/truyen?genre=${encodeURIComponent(genre)}&limit=8&page=1`,
-            { cache: 'no-store' }
-        )
-        if (!res.ok) return []
-        const data = await res.json()
-        const items: any[] = data.data || data.truyen || []
+        const { data: items } = await queryTruyen({ genre, limit: 8, page: 1 })
         return items
             .filter((t: any) => t.slug !== currentSlug)
             .slice(0, 6)
