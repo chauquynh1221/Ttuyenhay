@@ -8,6 +8,9 @@ export default function AdminEditChapterPage({ params }: { params: Promise<{ slu
     const router = useRouter()
     const searchParams = useSearchParams()
     const chapterId = searchParams.get('id')
+    const backPage = searchParams.get('page') || '1' // trang chương để quay về đúng chỗ
+    const backList = searchParams.get('back') || ''  // trang danh sách truyện (nếu có)
+    const backToChapters = `/admin/truyen/${slug}/chapters?page=${backPage}${backList ? `&back=${backList}` : ''}`
 
     const [form, setForm] = useState({ title: '', content: '', chapterNumber: Number(chapterNum) })
     const [loading, setLoading] = useState(true)
@@ -46,7 +49,7 @@ export default function AdminEditChapterPage({ params }: { params: Promise<{ slu
         })
         const d = await r.json()
         if (!r.ok) { setError(d.error || 'Lỗi cập nhật'); setSaving(false); return }
-        router.push(`/admin/truyen/${slug}/chapters`)
+        router.push(backToChapters)
     }
 
     if (loading) return <div className="p-8 text-center text-muted-2">Đang tải...</div>

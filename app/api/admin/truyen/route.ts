@@ -3,7 +3,7 @@ import dbConnect from '@/lib/mongodb'
 import Truyen from '@/models/Truyen'
 import Chapter from '@/models/Chapter'
 import { requireAdmin } from '@/lib/auth'
-import { escapeRegex } from '@/lib/apiHelpers'
+import { escapeRegex, clampLimit } from '@/lib/apiHelpers'
 
 // GET — danh sách truyện (search, filter, pagination)
 export async function GET(req: NextRequest) {
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
         const sort = searchParams.get('sort') || 'updatedAt'
         const order = searchParams.get('order') === 'asc' ? 1 : -1
         const page = parseInt(searchParams.get('page') || '1')
-        const limit = parseInt(searchParams.get('limit') || '20')
+        const limit = clampLimit(searchParams.get('limit'), 20, 500)
 
         const filter: any = {}
         if (q.trim()) {

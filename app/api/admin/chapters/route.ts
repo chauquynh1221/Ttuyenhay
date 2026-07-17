@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         if (!truyenId) return NextResponse.json({ error: 'Thiếu truyenId' }, { status: 400 })
 
         const page = parsePage(req.nextUrl.searchParams.get('page'))
-        const limit = clampLimit(req.nextUrl.searchParams.get('limit'), 50, 200)
+        const limit = clampLimit(req.nextUrl.searchParams.get('limit'), 50, 500)
 
         const [chapters, total] = await Promise.all([
             Chapter.find({ truyenId: new mongoose.Types.ObjectId(truyenId) })

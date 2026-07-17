@@ -2,13 +2,30 @@
 
 import { useState, useEffect, use, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import AdminPager from '@/components/admin/AdminPager'
+import AdminPageSize from '@/components/admin/AdminPageSize'
+import { useAdminPageSize } from '@/lib/useAdminPageSize'
 
 export default function AdminChaptersPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    // Trang chương lưu trong URL (?page=) → không mất vị trí khi quay lại sau khi sửa
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1)
+    const back = searchParams.get('back') || '' // trang của danh sách truyện để quay về đúng chỗ
+    const goPage = (n: number) => {
+        const sp = new URLSearchParams(searchParams.toString())
+        sp.set('page', String(Math.max(1, n)))
+        router.replace(`?${sp.toString()}`, { scroll: false })
+    }
+    // Số chương/trang (localStorage, sticky). Đổi limit thì về trang 1.
+    const [limit, setLimit, pageSizeReady] = useAdminPageSize()
+    const onLimit = (n: number) => { setLimit(n); goPage(1) }
+
     const [truyen, setTruyen] = useState<any>(null)
     const [chapters, setChapters] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
 
     // Form thêm chương
@@ -18,6 +35,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
     const [error, setError] = useState('')
 
     const fetchData = useCallback(async () => {
+        if (!pageSizeReady) return // chờ đọc xong localStorage → tránh fetch 2 lần
         setLoading(true)
         // Lấy thông tin truyện theo slug (chính xác, không phải "hack" search)
         const tr = await fetch(`/api/admin/truyen/${slug}`).then(r => r.json())
@@ -26,7 +44,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
             setTruyen(t)
 
             // Lấy chương
-            const cr = await fetch(`/api/admin/chapters?truyenId=${t._id}&page=${page}&limit=50`).then(r => r.json())
+            const cr = await fetch(`/api/admin/chapters?truyenId=${t._id}&page=${page}&limit=${limit}`).then(r => r.json())
             if (cr.success) {
                 setChapters(cr.chapters)
                 setTotalPages(cr.pagination.totalPages)
@@ -35,7 +53,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
             }
         }
         setLoading(false)
-    }, [slug, page])
+    }, [slug, page, limit, pageSizeReady])
 
     useEffect(() => { fetchData() }, [fetchData])
 
@@ -75,7 +93,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <Link href="/admin/truyen" className="text-xs text-muted-2 hover:text-primary">← Danh sách truyện</Link>
+                        <Link href={`/admin/truyen${back ? `?page=${back}` : ''}`} className="text-xs text-muted-2 hover:text-primary">← Danh sách truyện</Link>
                     </div>
                     <h1 className="text-2xl font-bold text-foreground">📖 {truyen.title}</h1>
                     <p className="text-sm text-muted mt-0.5">{truyen.totalChapters} chương • {truyen.author}</p>
@@ -123,6 +141,11 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
                 </form>
             )}
 
+            {/* Thanh công cụ: số chương/trang */}
+            <div className="flex justify-end mb-2">
+                <AdminPageSize limit={limit} onLimit={onLimit} />
+            </div>
+
             {/* Bảng chương */}
             <div className="card overflow-hidden">
                 <table className="w-full text-sm">
@@ -145,7 +168,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
                                 <td className="px-4 py-3 text-right">
                                     <Link href={`/truyen/${slug}/chuong-${ch.chapterNumber}`} target="_blank"
                                         className="text-xs text-muted hover:underline mr-2">Xem</Link>
-                                    <Link href={`/admin/truyen/${slug}/chapters/${ch.chapterNumber}/edit?id=${ch._id}`}
+                                    <Link href={`/admin/truyen/${slug}/chapters/${ch.chapterNumber}/edit?id=${ch._id}&page=${page}${back ? `&back=${back}` : ''}`}
                                         className="text-xs text-blue-600 hover:underline mr-2">Sửa</Link>
                                     <button onClick={() => handleDeleteChapter(ch)} className="text-xs text-red-500 hover:underline">Xóa</button>
                                 </td>
@@ -157,17 +180,7 @@ export default function AdminChaptersPage({ params }: { params: Promise<{ slug: 
                     </tbody>
                 </table>
 
-                {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-2">
-                        <span className="text-xs text-muted">Trang {page} / {totalPages}</span>
-                        <div className="flex gap-1">
-                            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                                className="btn btn-default btn-sm">← Trước</button>
-                            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                className="btn btn-default btn-sm">Sau →</button>
-                        </div>
-                    </div>
-                )}
+                <AdminPager page={page} totalPages={totalPages} onPage={goPage} unit="chương" />
             </div>
         </div>
     )

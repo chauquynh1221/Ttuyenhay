@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, useEffect, use } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import ImageUploadField from '@/components/ImageUploadField'
 
 export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
     const router = useRouter()
+    const searchParams = useSearchParams()
+    // Trang danh sách truyện để quay về đúng chỗ sau khi lưu
+    const backList = `/admin/truyen?page=${searchParams.get('page') || '1'}`
     const [genres, setGenres] = useState<{ _id: string; name: string }[]>([])
     const [form, setForm] = useState({
         id: '', title: '', slug: '', author: '', description: '', coverImage: '',
@@ -57,7 +60,7 @@ export default function AdminEditTruyenPage({ params }: { params: Promise<{ slug
         })
         const d = await r.json()
         if (!r.ok) { setError(d.error || 'Lỗi cập nhật'); setSaving(false); return }
-        router.push('/admin/truyen')
+        router.push(backList)
     }
 
     if (loading) return <div className="p-8 text-center text-muted-2">Đang tải...</div>

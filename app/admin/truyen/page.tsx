@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import AdminPager from '@/components/admin/AdminPager'
+import AdminPageSize from '@/components/admin/AdminPageSize'
+import { useAdminPageSize } from '@/lib/useAdminPageSize'
 
 interface TruyenItem {
     _id: string
@@ -26,21 +30,34 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 }
 
 export default function AdminTruyenPage() {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    // Trang lưu trong URL (?page=) → quay lại từ trang sửa không bị nhảy về trang 1
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1)
+    const goPage = (n: number) => {
+        const sp = new URLSearchParams(searchParams.toString())
+        sp.set('page', String(Math.max(1, n)))
+        router.replace(`?${sp.toString()}`, { scroll: false })
+    }
+    // Số bản ghi/trang (localStorage, sticky). Đổi limit thì về trang 1.
+    const [limit, setLimit, pageSizeReady] = useAdminPageSize()
+    const onLimit = (n: number) => { setLimit(n); goPage(1) }
+
     const [data, setData] = useState<TruyenItem[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState('')
-    const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [total, setTotal] = useState(0)
 
     const fetchData = useCallback(async () => {
+        if (!pageSizeReady) return // chờ đọc xong localStorage → tránh fetch 2 lần
         setLoading(true)
         const params = new URLSearchParams()
         if (search) params.set('q', search)
         if (statusFilter) params.set('status', statusFilter)
         params.set('page', String(page))
-        params.set('limit', '15')
+        params.set('limit', String(limit))
 
         const r = await fetch(`/api/admin/truyen?${params}`)
         const d = await r.json()
@@ -50,7 +67,7 @@ export default function AdminTruyenPage() {
             setTotal(d.pagination.total)
         }
         setLoading(false)
-    }, [search, statusFilter, page])
+    }, [search, statusFilter, page, limit, pageSizeReady])
 
     useEffect(() => { fetchData() }, [fetchData])
 
@@ -90,16 +107,17 @@ export default function AdminTruyenPage() {
 
             {/* Filters */}
             <div className="flex gap-3 mb-4">
-                <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
+                <input value={search} onChange={e => { setSearch(e.target.value); goPage(1) }}
                     placeholder="Tìm kiếm truyện, tác giả, slug..."
                     className="form-control flex-1 max-w-sm" />
-                <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
+                <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); goPage(1) }}
                     className="form-control w-auto">
                     <option value="">Tất cả trạng thái</option>
                     <option value="ongoing">Đang ra</option>
                     <option value="completed">Hoàn thành</option>
                     <option value="paused">Tạm dừng</option>
                 </select>
+                <div className="ml-auto"><AdminPageSize limit={limit} onLimit={onLimit} /></div>
             </div>
 
             {/* Table */}
@@ -151,8 +169,8 @@ export default function AdminTruyenPage() {
                                                 </div>
                                             </td>
                                             <td className="px-4 py-3 text-right whitespace-nowrap">
-                                                <Link href={`/admin/truyen/${t.slug}/chapters`} className="text-xs text-purple-600 hover:underline mr-2">Chương</Link>
-                                                <Link href={`/admin/truyen/${t.slug}/edit`} className="text-xs text-blue-600 hover:underline mr-2">Sửa</Link>
+                                                <Link href={`/admin/truyen/${t.slug}/chapters?back=${page}`} className="text-xs text-purple-600 hover:underline mr-2">Chương</Link>
+                                                <Link href={`/admin/truyen/${t.slug}/edit?page=${page}`} className="text-xs text-blue-600 hover:underline mr-2">Sửa</Link>
                                                 <button onClick={() => handleDelete(t)} className="text-xs text-red-500 hover:underline">Xóa</button>
                                             </td>
                                         </tr>
@@ -165,17 +183,7 @@ export default function AdminTruyenPage() {
                         </div>
 
                         {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-2">
-                                <span className="text-xs text-muted">Trang {page} / {totalPages} ({total} truyện)</span>
-                                <div className="flex gap-1">
-                                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                                        className="btn btn-default btn-sm">← Trước</button>
-                                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                                        className="btn btn-default btn-sm">Sau →</button>
-                                </div>
-                            </div>
-                        )}
+                        <AdminPager page={page} totalPages={totalPages} onPage={goPage} total={total} unit="truyện" />
                     </>
                 )}
             </div>
